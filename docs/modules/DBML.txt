@@ -1,0 +1,23 @@
+===============================================================================
+Module #DBML: DATABASE MODELS LAYER
+===============================================================================
+@USAGE:
+	Communication between application and postgresql database. This layer
+	translates data required by application from object-oriented form to
+	database.
+
+@INPUT:
+	1. Object-oriented data represented as model class objects
+
+@OUTPUT:
+	1. Data stored in database
+
+@INPUT DESCRIPTION:
+	1. - 
+
+@OUTPUT DESCRIPTION:
+	1. -
+
+@DEPENDENCIES:
+	1. PostgreSQL server
+===============================================================================
