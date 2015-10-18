@@ -15,3 +15,5 @@ do
 done
 eval $PUPPET apply --modulepath=/home/vagrant/ScopeIT/env/modules /home/vagrant/ScopeIT/env/manifests/default.pp
 
+#Temporary workaround: flush all from firewall
+sudo iptables -F
