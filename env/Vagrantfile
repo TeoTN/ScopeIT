@@ -1,0 +1,11 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Default puppet provisioning from vagrant is not used due to errorneous
+# support for Puppet 4.x
+Vagrant.configure(2) do |config|
+	config.vm.box = "puppetlabs/centos-7.0-64-puppet"
+	config.vm.network "forwarded_port", guest: 1111, host: 8080
+	config.vm.synced_folder "../", "/home/vagrant/ScopeIT/"
+	config.vm.provision "shell", path: "init-server.sh"
+end

@@ -11,6 +11,8 @@ build/
 develop-eggs/
 dist/
 downloads/
+env/scopeit/
+env/modules/*
 eggs/
 .eggs/
 lib/
