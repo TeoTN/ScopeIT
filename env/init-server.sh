@@ -1,5 +1,7 @@
 #!/bin/bash
 SHELLRC='/home/vagrant/.bashrc'
+ENV='/home/vagrant/ScopeIT/env/'
+
 if ! grep -q 'PATH' "$SHELLRC"; then
 	echo 'export PATH=$PATH:/usr/pgsql-9.4/bin/' >> $SHELLRC
 	echo "alias scopeit='cd /home/vagrant/ScopeIT/src/; source ../env/scopeit/bin/activate; python manage.py runserver 0.0.0.0:1111'" >> $SHELLRC
@@ -7,12 +9,11 @@ fi
 source $SHELLRC
 
 PUPPET="/opt/puppetlabs/bin/puppet"
-PUPPET_MODULES=("puppetlabs-postgresql" "stankevich-python")
 
-for MODULE in ${PUPPET_MODULES[*]}
+while read MODULE; 
 do
 	eval $PUPPET module install $MODULE --modulepath /home/vagrant/ScopeIT/env/modules/
-done
+done < ${ENV}Modulesfile
 eval $PUPPET apply --modulepath=/home/vagrant/ScopeIT/env/modules /home/vagrant/ScopeIT/env/manifests/default.pp
 
 #Temporary workaround: flush all from firewall

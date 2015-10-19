@@ -1,12 +1,110 @@
+{% load staticfiles %}
 <!DOCTYPE HTML>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>ScopeIT</title>
+    <meta charset="utf-8">
+    <title>ScopeIT</title>
+    <link rel="stylesheet" href="{% static 'styles/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+    <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
 <body>
-	<header>
-		<h1>ScopeIT</h1>
-	</header>
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">ScopeIT</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="#">Profile</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown dropdown-lg">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Log in <span class="caret"></span></a>
+                    <div class="dropdown-menu dropdown-menu-lg panel panel-default">
+                        <form class="panel-body">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" placeholder="ex. JohnDoe4">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" placeholder="Password">
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">Log in!</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<main class="container">
+    <section class="jumbotron">
+        <h1>Find your ideal job!</h1>
+        <p>
+            Are you sick and tired with skimming through endless lists of vacancies on dozens of webpages?<br>
+            Why don't you just <a href="#">fill your profile now</a> and wait until your brand new job finds you!<br>
+            Let the most innovative and brilliant algorithms dive into our immense base of job ads and provide you
+            with a perfect match.
+        </p>
+        <!-- <button class="btn btn-lg btn-primary">Learn more &raquo;</button> -->
+    </section>
+    <section class="row">
+        <div class="col-sm-4">
+            <article class="panel panel-success">
+                <header class="panel-heading">
+                    <h3 class="panel-title">Upload your CV!</h3>
+                </header>
+                <div class="panel-body">
+                    <p>
+                        Should you want to speed up your recruitment process it is a good idea to upload your CV<br>
+                        We will send it to the company as soon as you accept your match:
+                    </p>
+                    <button class="btn btn-success btn-block">Upload CV</button>
+                </div>
+
+            </article>
+        </div>
+        <div class="col-sm-4">
+            <article class="panel panel-warning">
+                <header class="panel-heading">
+                    <h3 class="panel-title">How does it work?</h3>
+                </header>
+                <div class="panel-body">
+                    <p>
+                        Have you been wondering how does ScopeIT work and why is it better from your previous
+                        job-searching web pages? You can read what are the algorithms and ideas behind ScopeIT!
+                    </p>
+                    <button class="btn btn-warning btn-block">Learn more</button>
+                </div>
+            </article>
+        </div>
+        <div class="col-sm-4">
+            <article class="panel panel-info">
+                <header class="panel-heading">
+                    <h3 class="panel-title">Fill your profile faster!</h3>
+                </header>
+                <div class="panel-body">
+                    <p>
+                        Have you spent hours on polishing your LinkenIn profile?<br>
+                        You can import your skills to ScopeIT profile!<br><br>
+                    </p>
+                    <button class="btn btn-info btn-block">Import skills from LinkedIn</button>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
 </body>
 </html>
