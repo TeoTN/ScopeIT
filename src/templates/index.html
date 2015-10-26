@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load socialaccount %}
+{% load account %}
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -19,7 +21,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">ScopeIT</a>
+            <a class="navbar-brand" href="/">ScopeIT</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -28,28 +30,53 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown dropdown-lg">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Log in <span class="caret"></span></a>
-                    <div class="dropdown-menu dropdown-menu-lg panel panel-default">
-                        <form class="panel-body">
-                            <div class="form-group">
-                                <label for="username">Username</label>
-                                <input type="text" class="form-control" id="username" placeholder="ex. JohnDoe4">
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password" placeholder="Password">
-                            </div>
-                            <button type="submit" class="btn btn-success btn-block">Log in!</button>
-                        </form>
-                    </div>
-                </li>
+                {% if user.is_authenticated %}
+                    <p class="navbar-text">
+                        {% if request.user.first_name or request.user.last_name %}
+                            {{ request.user.first_name }} {{ request.user.last_name }}
+                        {% else %}
+                            {{ request.user.username }}
+                        {% endif %}
+                    </p>
+                    <li><a href="{% url 'account_logout' %}">Logout</a></li>
+                {% else %}
+                    <li class="dropdown dropdown-lg">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Log in <span class="caret"></span></a>
+                        <div class="dropdown-menu dropdown-menu-lg panel panel-default">
+                            <form class="panel-body" method="POST" action="{% url 'account_login' %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" id="username" name="login"
+                                           placeholder="e.g. Smith89">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                           placeholder="Password">
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-success btn-block">Log in</button>
+                                <a href="{% url 'account_signup' %}" role="button"
+                                   class="btn btn-sm btn-info btn-block">
+                                    Sign up
+                                </a>
+                                <hr>
+                                <a href="{% provider_login_url 'google' method='oauth2' %}"
+                                   class="btn btn-sm btn-danger btn-block">
+                                    Log in with Google
+                                </a>
+                            </form>
+                        </div>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
 </nav>
 <main class="container">
+    {% block header %}{% endblock %}
+    {% block content %}
     <section class="jumbotron">
         <h1>Find your ideal job!</h1>
         <p>
@@ -105,6 +132,7 @@
             </article>
         </div>
     </section>
+    {% endblock %}
 </main>
 </body>
 </html>

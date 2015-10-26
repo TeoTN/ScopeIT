@@ -5,6 +5,7 @@ $psql_user = 'root'
 $psql_passwd = 'existenceprecedeessence'
 $psql_db = 'scopeit'
 $venv_path = '/home/vagrant/ScopeIT/env/scopeit'
+$req_path = '/home/vagrant/ScopeIT/requirements.txt'
 
 include git
 
@@ -42,18 +43,25 @@ postgresql::server::pg_hba_rule { 'allow remote connections with password':
     auth_method => 'md5',
 }
 
-class { 'python' :
-	version		=> 'system',
-	pip			=> 'present',
-    dev			=> 'present',
-	virtualenv	=> 'present',
+package { 'python34' :
+	ensure => 'installed'
 }
 
-python::virtualenv { $venv_path :
-	ensure			=> 'present',
-	requirements	=> '/home/vagrant/ScopeIT/requirements.txt',
+package { 'python34-devel':
+	ensure => 'installed'
 }
 
+exec { "install_pip":
+	command		=> "wget https://bootstrap.pypa.io/get-pip.py; chmod +x ./get-pip.py; python3.4 get-pip.py",
+	path 		=> ["/usr/local/bin/", "/bin/"]
+}
+
+exec { "install_requirements":
+	command 	=> "pip install -r ${req_path}",
+	path 		=> ["/usr/local/bin/", "/bin/"]
+}
+
+/*
 class { 'nodejs':
 	nodejs_dev_package_ensure 	=> 'present',
 	npm_package_ensure			=> 'present',
@@ -65,23 +73,21 @@ package { 'bower':
     provider => 'npm',
 }
 
-package { 'react':
+nodejs::npm { 'react':
     ensure => 'present',
-    provider => 'npm',
     install_options => ['--save'],
     target          => '/home/vagrant/ScopeIT/src/static/js/build/',
 }
 
-package { 'react-dom':
+nodejs::npm { 'react-dom':
     ensure => 'present',
-    provider => 'npm',
     install_options => ['--save'],
     target          => '/home/vagrant/ScopeIT/src/static/js/build/',
 }
 
-package { 'babel':
+nodejs::npm { 'babel':
     ensure => 'present',
-    provider => 'npm',
     install_options => ['--save'],
     target          => '/home/vagrant/ScopeIT/src/static/js/build/',
 }
+*/

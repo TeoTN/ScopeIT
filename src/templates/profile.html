@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+{% load account %}
+{% load socialaccount %}
+
+
+{% block content %}
+    <h1>Hello, {% user_display user %}</h1>
+{% endblock %}
