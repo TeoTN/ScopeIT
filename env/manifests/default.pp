@@ -4,7 +4,7 @@
 $psql_user = 'root'
 $psql_passwd = 'existenceprecedeessence'
 $psql_db = 'scopeit'
-$venv_path = '/home/vagrant/ScopeIT/env/scopeit'
+$venv_path = '/home/vagrant/ScopeIT/env/scopeit/'
 $req_path = '/home/vagrant/ScopeIT/requirements.txt'
 
 include git
@@ -43,24 +43,25 @@ postgresql::server::pg_hba_rule { 'allow remote connections with password':
     auth_method => 'md5',
 }
 
-package { 'python34' :
-	ensure => 'installed'
+package { 'python3.4-venv':
+	ensure 		=> installed
 }
 
-package { 'python34-devel':
-	ensure => 'installed'
+class { 'python' :
+	version 	=> '3.4',
+	pip			=> 'present',
+	dev 		=> 'present',
 }
 
-exec { "install_pip":
-	command		=> "wget https://bootstrap.pypa.io/get-pip.py; chmod +x ./get-pip.py; python3.4 get-pip.py",
-	path 		=> ["/usr/local/bin/", "/bin/"]
+python::pyvenv { 'scopeit':
+	ensure 		=> 'present',
+	version 	=> '3.4',
+	venv_dir 	=> $venv_path,
 }
 
-exec { "install_requirements":
-	command 	=> "pip install -r ${req_path}",
-	path 		=> ["/usr/local/bin/", "/bin/"]
+python::requirements { $req_path:
+	virtualenv 	=> 'scopeit',
 }
-
 /*
 class { 'nodejs':
 	nodejs_dev_package_ensure 	=> 'present',
