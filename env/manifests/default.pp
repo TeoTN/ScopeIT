@@ -17,10 +17,9 @@ git::config { 'user.email' :
 	value => 'staniowp@gmail.com',
 }
 
-package { 'postgresql-devel':
-	ensure => installed
-}
-
+package { 'postgresql-server-dev-9.4':
+	ensure 	=> installed,
+} ->
 class { 'postgresql::globals':
 	manage_package_repo => true,
 	version             => '9.4',
@@ -45,23 +44,18 @@ postgresql::server::pg_hba_rule { 'allow remote connections with password':
 
 package { 'python3.4-venv':
 	ensure 		=> installed
-}
-
+} ->
 class { 'python' :
 	version 	=> '3.4',
 	pip			=> 'present',
 	dev 		=> 'present',
-}
-
+} ->
 python::pyvenv { 'scopeit':
 	ensure 		=> 'present',
 	version 	=> '3.4',
 	venv_dir 	=> $venv_path,
 }
 
-python::requirements { $req_path:
-	virtualenv 	=> 'scopeit',
-}
 /*
 class { 'nodejs':
 	nodejs_dev_package_ensure 	=> 'present',
