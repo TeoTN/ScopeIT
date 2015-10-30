@@ -26,7 +26,10 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="#">Profile</a></li>
+                <li><a href="/accounts/profile/">Profile</a></li>
+                {% if request.user.is_superuser %}
+                <li><a href="/admin/">Admin</a></li>
+                {% endif %}
             </ul>
 
             <ul class="nav navbar-nav navbar-right">

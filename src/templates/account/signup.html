@@ -19,14 +19,14 @@
                     {{ field.label }}
                 </label>
                 {% if field.errors %}
-                    <div class="col-sm-8">
+                    <div class="col-sm-7">
                 {% else %}
                     <div class="col-sm-10">
                 {% endif %}
                     {{ field | with_class:"form-control" }}
                 </div>
                 {% for error in field.errors %}
-                    <p class="text-danger col-sm-2 form-control-static">{{ error }}</p>
+                    <p class="text-danger col-sm-3 form-control-static">{{ error }}</p>
                 {% endfor %}
                 {% if field.help_text %}
                 <p class="help">{{ field.help_text|safe }}</p>
