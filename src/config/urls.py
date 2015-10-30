@@ -9,7 +9,7 @@ from app_profile.views import ProfileView
 
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name="index.html")),
+    url(r'^$', TemplateView.as_view(template_name="index.html"), name='index'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     url(r'^accounts/', include('allauth.urls')),
