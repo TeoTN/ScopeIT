@@ -6,11 +6,13 @@ from rest_framework.response import Response
 
 from .serializers import UserSerializer, SkillSerializer
 from app_profile.models import Profile, Skill
+from api.permissions import IsObjectOwnerOrAdmin, IsAdminOrReadOnly
 
 
-class ProfileViewSet(ModelViewSet):
+class UsersViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (IsObjectOwnerOrAdmin, IsAdminOrReadOnly)
 
 
 class SkillsViewSet(ModelViewSet):

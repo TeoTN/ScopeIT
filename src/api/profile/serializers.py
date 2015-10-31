@@ -20,7 +20,7 @@ class ProfileSerializer(ModelSerializer):
 
 
 class UserSerializer(ModelSerializer):
-    profile = ProfileSerializer()
+    profile = ProfileSerializer(read_only=True)
     links = SerializerMethodField()
 
     class Meta:
