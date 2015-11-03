@@ -1,14 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from api.profile.views import UsersViewSet, SkillsViewSet
-from rest_framework.routers import DefaultRouter
 from django.conf.urls import include, url
 
+#from rest_framework.routers import DefaultRouter
+from rest_framework_extensions.routers import ExtendedDefaultRouter
 
-router = DefaultRouter()
-router.register('users', UsersViewSet, base_name='user')
-router.register('skills', SkillsViewSet, base_name='skill')
+from api.profile.views import UserProfileViewSet, ProfessionalProfileViewSet
+
+
+router = ExtendedDefaultRouter()
+
+profile_routes = router.register('profiles',
+                                      UserProfileViewSet,
+                                      base_name='user-profile')
+
+profile_routes.register('professional',
+                        ProfessionalProfileViewSet,
+                        base_name='professional-profile',
+                        parents_query_lookups=['profile'])
+
 urlpatterns = [
     url(r'', include(router.urls)),
 ]
