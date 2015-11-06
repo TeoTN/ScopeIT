@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework.fields import ReadOnlyField
 
-from app_profile.models import UserProfile, Skill, UserSkill, ProfessionalProfile
+from accounts.models import UserProfile, Skill, UserSkill, ProfessionalProfile
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -45,7 +45,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('username', 'is_employer', 'links')
+        fields = ('pk', 'username', 'is_employer', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -57,3 +57,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return {
             'professional_profiles': professional_absolute_url
         }
+
+    def create(self, validated_data):
+        user = validated_data.pop('user')
+        username = user['username']
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            message = "User {} does not exist.".format(username)
+            raise serializers.ValidationError(message)
+        up = UserProfile(user=user, **validated_data)
+        up.save()
+

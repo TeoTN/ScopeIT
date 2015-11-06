@@ -2,7 +2,7 @@
 {% load socialaccount %}
 {% load account %}
 <!DOCTYPE HTML>
-<html>
+<html ng-app="ScopeIT">
 <head>
     <meta charset="utf-8">
     <title>ScopeIT</title>
@@ -11,8 +11,10 @@
     <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/angular.min.js' %}"></script>
+    <script src="{% static 'js/common/controllers.js' %}"></script>
+    {% block dependencies %} {% endblock dependencies %}
 </head>
-<body>
+<body ng-controller="MainController">
 <nav class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="navbar-header">

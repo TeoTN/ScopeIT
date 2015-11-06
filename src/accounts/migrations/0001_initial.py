@@ -45,9 +45,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
                 ('city', models.CharField(max_length=50)),
                 ('country', models.CharField(max_length=30)),
-                ('certificates', models.ManyToManyField(to='app_profile.Certificate')),
-                ('education_tiers', models.ManyToManyField(to='app_profile.EducationTier')),
-                ('languages', models.ManyToManyField(to='app_profile.Language')),
+                ('certificates', models.ManyToManyField(to='accounts.Certificate')),
+                ('education_tiers', models.ManyToManyField(to='accounts.EducationTier')),
+                ('languages', models.ManyToManyField(to='accounts.Language')),
             ],
         ),
         migrations.CreateModel(
@@ -62,8 +62,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
                 ('is_employer', models.BooleanField()),
-                ('matched_by', models.ManyToManyField(to='app_profile.UserProfile', related_name='rel_matches')),
-                ('matches', models.ManyToManyField(to='app_profile.UserProfile', related_name='rel_matched_by')),
+                ('matched_by', models.ManyToManyField(to='accounts.UserProfile', related_name='rel_matches')),
+                ('matches', models.ManyToManyField(to='accounts.UserProfile', related_name='rel_matched_by')),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -72,18 +72,18 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
                 ('level', models.IntegerField(default=0, choices=[(5, 'Expert'), (4, 'Advanced'), (3, 'Intermediate'), (2, 'Beginner')])),
-                ('profile', models.ForeignKey(to='app_profile.ProfessionalProfile')),
-                ('skill', models.ForeignKey(to='app_profile.Skill')),
+                ('profile', models.ForeignKey(to='accounts.ProfessionalProfile')),
+                ('skill', models.ForeignKey(to='accounts.Skill')),
             ],
         ),
         migrations.AddField(
             model_name='professionalprofile',
             name='skills',
-            field=models.ManyToManyField(to='app_profile.Skill', through='app_profile.UserSkill'),
+            field=models.ManyToManyField(to='accounts.Skill', through='accounts.UserSkill'),
         ),
         migrations.AddField(
             model_name='professionalprofile',
             name='user_profile',
-            field=models.ForeignKey(to='app_profile.UserProfile'),
+            field=models.ForeignKey(to='accounts.UserProfile'),
         ),
     ]

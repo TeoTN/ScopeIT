@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+{% load staticfiles account socialaccount common_extras %}
+
+{% block dependencies %}
+    <script src="{% static 'js/accounts/directives.js' %}"></script>
+{% endblock dependencies %}
+
+{% block content %}
+    <h1>Hello, {% user_display user %}</h1>
+    {% if user.userprofile %}
+        <user-profile employer="{{ user.userprofile.is_employer }}"></user-profile>
+    {% else %}
+        <h3>Fill your profile</h3>
+        <profile-form></profile-form>
+    {% endif %}
+{% endblock %}

@@ -12,16 +12,17 @@ from .serializers import (
     UserProfileSerializer,
     ProfessionalProfileSerializer
 )
-from app_profile.models import Skill, UserSkill, UserProfile, ProfessionalProfile
+from accounts.models import Skill, UserSkill, UserProfile, ProfessionalProfile
 from api.permissions import UserPermissionScheme
 
 
 class UserProfileViewSet(ModelViewSet):
     queryset = UserProfile.objects.all()
-    #permission_classes = (UserPermissionScheme, )
+    # permission_classes = (UserPermissionScheme, )
     serializer_class = UserProfileSerializer
     lookup_field = 'user__username'
     lookup_value_regex = '[0-9a-zA-Z]+'
+
 
 class SkillsViewSet(ModelViewSet):
     queryset = Skill.objects.all()
@@ -50,7 +51,7 @@ class UserSkillsView(ListModelMixin,
         This view is used to list and create skills of a user
     """
 
-    serializer_class=UserSkillSerializer
+    serializer_class = UserSkillSerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

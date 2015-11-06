@@ -6,7 +6,7 @@ from django.conf.urls import include, url
 #from rest_framework.routers import DefaultRouter
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 
-from api.profile.views import UserProfileViewSet, ProfessionalProfileViewSet
+from api.accounts.views import UserProfileViewSet, ProfessionalProfileViewSet
 
 
 router = ExtendedDefaultRouter()
