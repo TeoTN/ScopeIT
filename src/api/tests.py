@@ -6,8 +6,8 @@ from django.contrib.sessions.middleware import SessionMiddleware
 
 from rest_framework.test import APIRequestFactory
 
-from .profile.views import UsersViewSet, SkillsViewSet
-from app_profile.models import Skill
+from api.accounts.views import UserProfileViewSet, SkillsViewSet, EntityViewSet
+from accounts.models import Skill, Entity, UserProfile
 
 import json
 
@@ -34,7 +34,7 @@ class TestUsersViewSetAsAdmin(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'get': 'list'})
+        view = UserProfileViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200, "Admin should have access granted to the list of users")
         self.assertEqual(len(response.data), 2)
@@ -52,7 +52,7 @@ class TestUsersViewSetAsAdmin(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'get': 'retrieve'})
+        view = UserProfileViewSet.as_view({'get': 'retrieve'})
         response = view(request, pk=self.user1.pk)
         failure_msg = "Admin should be able to GET any profile. "
         self.assertEqual(response.status_code, 200, failure_msg + str(response.data))
@@ -73,7 +73,7 @@ class TestUsersViewSetAsAdmin(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'post': 'create'})
+        view = UserProfileViewSet.as_view({'post': 'create'})
         response = view(request)
         failure_msg = "Admin should be able to create new user. "
         self.assertEqual(response.status_code, 201, failure_msg + str(response.data))
@@ -88,8 +88,8 @@ class TestUsersViewSetAsUser(TestCase):
         self.factory = APIRequestFactory()
         self.user1, _ = User.objects.get_or_create(username='alice')
         self.user2, _ = User.objects.get_or_create(username='bob')
-        self.skill_haskell, _ = Skill.objects.get_or_create(name='Haskell', type=Skill.PROGRAMMING_LANGUAGE)
-        self.skill_erlang, _ = Skill.objects.get_or_create(name='Erlang', type=Skill.PROGRAMMING_LANGUAGE)
+        self.skill_haskell, _ = Skill.objects.get_or_create(name='Haskell', type=Skill.LANGUAGE)
+        self.skill_erlang, _ = Skill.objects.get_or_create(name='Erlang', type=Skill.LANGUAGE)
 
         self.skill_json = serializers.serialize("json", [self.skill_erlang, self.skill_haskell])
 
@@ -101,7 +101,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'get': 'list'})
+        view = UserProfileViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 403, "Users should not have access granted to the list of users")
 
@@ -117,7 +117,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'get':'retrieve'})
+        view = UserProfileViewSet.as_view({'get':'retrieve'})
         response = view(request, pk=self.user1.pk)
         self.assertEqual(response.status_code, 200, "User should be able to access his/her profile")
 
@@ -133,7 +133,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'get':'retrieve'})
+        view = UserProfileViewSet.as_view({'get':'retrieve'})
         response = view(request, pk=self.user2.pk)
         self.assertEqual(response.status_code, 403, 'User should not have access to others profile')
 
@@ -151,7 +151,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'post': 'create'})
+        view = UserProfileViewSet.as_view({'post': 'create'})
         response = view(request, kwargs=new_user)
 
         failure_msg = "Non-admin should not create new user. "
@@ -174,7 +174,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UsersViewSet.as_view({'patch': 'partial_update'})
+        view = UserProfileViewSet.as_view({'patch': 'partial_update'})
         response = view(request, pk=self.user1.pk)
         failure_msg = "User should be able to update his/her profile. "
         self.assertEqual(response.status_code, 200, failure_msg + str(response.data))
@@ -196,7 +196,7 @@ class TestSkillsViewSet(TestCase):
         self.user1, _ = User.objects.get_or_create(username='alice')
         self.new_skill = {
             "name": "Haskell",
-            "type": Skill.PROGRAMMING_LANGUAGE
+            "type": Skill.LANGUAGE
         }
 
     def test_should_list_skills(self):
@@ -240,3 +240,56 @@ class TestSkillsViewSet(TestCase):
 
         failure_msg = "Anonymous user should not be able to create skill. "
         self.assertEqual(response.status_code, 403, failure_msg + str(response.data))
+
+
+class TestEntityAsAdmin(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user1, _ = User.objects.get_or_create(username='alice')
+        self.user1profile, _ = UserProfile.objects.get_or_create(user=self.user1, is_employer=False)
+        self.admin, _ = User.objects.get_or_create(username='admin', is_superuser=True, is_staff=True)
+        self.new_entity_data = {
+            'city': 'Wroclaw',
+            'country': 'Poland',
+        }
+        self.new_skills_data = [
+            {
+                'level': 4,
+                'skill': 'C++',
+                'skill_type': Skill.LANGUAGE
+            }
+        ]
+
+    def test_should_create_entity(self):
+        url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
+
+        request = self.factory.post(url, data = self.new_entity_data)
+        request.user = self.admin
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request.session.save()
+
+        view = EntityViewSet.as_view({'post': 'create'})
+        response = view(request, parent_lookup_profile='alice')
+
+        failure_msg = "Admin should be able to add entity to user. "
+        self.assertEqual(response.status_code, 201, failure_msg + str(response.data))
+        Entity.objects.all().delete()
+
+    def test_should_create_entity_and_skills(self):
+        url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
+
+        self.new_entity_data['skills'] = self.new_skills_data
+
+        request = self.factory.post(url, data=self.new_entity_data)
+        request.user = self.admin
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request.session.save()
+
+        view = EntityViewSet.as_view({'post': 'create'})
+        response = view(request, parent_lookup_profile='alice')
+
+        failure_msg = "Admin should be able to add entity to user. "
+        self.assertEqual(response.status_code, 201, failure_msg + str(response.data))
+
+        failure_msg = "User skills should've been added. "
+        self.assertEqual(len(response.data['skills']), len(self.new_skills_data), failure_msg + str(response.data))

@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(accounts.urls)),
-    url(r'^api/', include("api.urls", namespace='api')),
+    url(r'^api/v1/', include("api.urls", namespace='api')),
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
 ]

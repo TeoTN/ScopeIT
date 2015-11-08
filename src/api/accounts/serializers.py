@@ -1,11 +1,9 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import FieldDoesNotExist
 
 from rest_framework.reverse import reverse
 from rest_framework import serializers
-from rest_framework.fields import ReadOnlyField
 
-from accounts.models import UserProfile, Skill, UserSkill, ProfessionalProfile
+from accounts.models import UserProfile, Skill, UserSkill, Entity
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -14,58 +12,82 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
+    skill = serializers.CharField(source='skill.name')
+    skill_type = serializers.CharField(source='skill.type')
+
     class Meta:
+        fields = ('skill', 'skill_type', 'level')
         model = UserSkill
 
 
-class ProfessionalProfileSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True)
+class EntitySerializer(serializers.ModelSerializer):
+    skills = UserSkillSerializer(many=True)
     links = serializers.SerializerMethodField()
 
     class Meta:
-        model = ProfessionalProfile
+        model = Entity
         fields = ('city', 'country', 'skills', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
-        professional_url = reverse('api:professional-profile-detail',
-                                   kwargs={
-                                       'parent_lookup_profile': obj.user_profile.user.username,
-                                       'pk': obj.pk
-                                   })
-        professional_absolute_url = request.build_absolute_uri(professional_url)
+        view = self.context['view']
+        entity_relative_url = reverse('api:entity-detail',
+                                      kwargs={
+                                          'parent_lookup_profile': view.kwargs['parent_lookup_profile'],
+                                          'pk': obj.pk
+                                      })
+        entity_absolute_url = request.build_absolute_uri(entity_relative_url)
         return {
-            'self': professional_absolute_url
+            'self': entity_absolute_url
         }
+
+    def create(self, validated_data):
+        username = self.context['view'].kwargs['parent_lookup_profile']
+        user = User.objects.get(username=username)
+        skills = validated_data.pop('skills')
+        entity = Entity(**validated_data)
+        entity.user_profile = user.userprofile
+        self.assign_skills(entity, skills)
+        entity.save()
+        return entity
+
+    def assign_skills(self, entity, skills):
+        for skill_data in skills:
+            from pprint import pprint
+            pprint(skill_data)
+            skill = Skill.objects.get_or_create(name=skill_data['skill'], type=skill_data['skill_type'])
+            UserSkill.objects.get_or_create(level=skill_data['level'], skill=skill, entity=entity)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = ('pk', 'username', 'is_employer', 'links')
+        fields = ('is_employer', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
-        professional_url = reverse('api:professional-profile-list',
+        entity_relative_url = reverse('api:entity-list',
                                    kwargs={
                                        'parent_lookup_profile': obj.user.username
                                    })
-        professional_absolute_url = request.build_absolute_uri(professional_url)
+        entity_absolute_url = request.build_absolute_uri(entity_relative_url)
         return {
-            'professional_profiles': professional_absolute_url
+            'entities': entity_absolute_url
         }
 
     def create(self, validated_data):
         user = validated_data.pop('user')
-        username = user['username']
+        username = user.get('username', None)
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             message = "User {} does not exist.".format(username)
             raise serializers.ValidationError(message)
-        up = UserProfile(user=user, **validated_data)
-        up.save()
 
+        return UserProfile.objects.create(user=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.update(**validated_data)
+        instance.save()

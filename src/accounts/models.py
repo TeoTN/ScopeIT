@@ -1,17 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
-
 
 class Skill(models.Model):
-    LANGUAGE = 1024
-    FRAMEWORK = 512
-    LIBRARY = 256
-    OS = 128
-    TOOL = 64
-    TECHNOLOGY = 32
+    LANGUAGE = 'LNG'
+    FRAMEWORK = 'FRW'
+    LIBRARY = 'LIB'
+    OS = 'OS'
+    TOOL = 'TOOL'
+    TECHNOLOGY = 'TECH'
 
     TYPES = (
         (LANGUAGE, 'Programming language'),
@@ -23,7 +20,7 @@ class Skill(models.Model):
     )
 
     name = models.CharField(max_length=50, null=False, primary_key=True)
-    type = models.IntegerField(choices=TYPES, null=False)
+    type = models.CharField(max_length=8, null=False)
 
     def __str__(self):
         return self.name
@@ -74,7 +71,12 @@ class UserProfile(models.Model):
         return self.profile_set
 
 
-class ProfessionalProfile(models.Model):
+class Entity(models.Model):
+    """
+    Entity is a characteristics set used for specifying either user or post requirements and skills.
+    Therefore it is in one-to-many relation with user, since a user may possess one or more characteristics sets
+     depending on his role: employer or applicant.
+    """
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='profile_set')
     skills = models.ManyToManyField(Skill, through='UserSkill')
     city = models.CharField(max_length=50, null=False, blank=False)
@@ -97,16 +99,6 @@ class UserSkill(models.Model):
         (BEGINNER, 'Beginner'),
     )
 
-    profile = models.ForeignKey(ProfessionalProfile)
+    profile = models.ForeignKey(Entity)
     skill = models.ForeignKey(Skill)
     level = models.IntegerField(default=0, choices=LEVELS)
-
-"""
-@receiver(post_save, sender=User)
-def attach_profile(instance, created, **kwargs):
-    print(instance.username)
-    if created:
-        new_profile = Profile()
-        new_profile.user = instance
-        new_profile.save()
-"""

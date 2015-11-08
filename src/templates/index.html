@@ -12,6 +12,8 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/angular.min.js' %}"></script>
     <script src="{% static 'js/common/controllers.js' %}"></script>
+    {% include 'autocomplete_light/static.html' %}
+
     {% block dependencies %} {% endblock dependencies %}
 </head>
 <body ng-controller="MainController">
@@ -45,6 +47,7 @@
                             {{ request.user.username }}
                         {% endif %}
                     </p>
+                    <var id="username" class="hidden">{{ request.user }}</var>
                     <li><a href="{% url 'account_logout' %}">Logout</a></li>
                 {% else %}
                     <li class="dropdown dropdown-lg">

@@ -1,5 +1,8 @@
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
+
+from .forms import EntityForm
 
 
 class ProfileView(TemplateView):
@@ -14,3 +17,8 @@ class ProfileView(TemplateView):
             return redirect('index')
 
         return super(ProfileView, self).dispatch(request, *args, **kwargs)
+
+
+class EntityFormView(FormView):
+    template_name = 'account/entity_form.html'
+    form_class = EntityForm
