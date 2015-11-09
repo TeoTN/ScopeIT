@@ -252,6 +252,13 @@ class TestEntityAsAdmin(TestCase):
             'city': 'Wroclaw',
             'country': 'Poland',
         }
+        self.skill1, _ = Skill.objects.get_or_create(name='Scheme', type=Skill.LANGUAGE)
+        self.skill1data = {
+            'name': 'Scheme',
+            'type': Skill.LANGUAGE,
+            'level': UserSkill.BEGINNER
+        }
+
         self.new_skills_data = [
             {
                 'level': UserSkill.ADVANCED,
@@ -296,3 +303,24 @@ class TestEntityAsAdmin(TestCase):
 
         failure_msg = "User skills should've been added. "
         self.assertEqual(len(response.data['skills']), len(self.new_skills_data), failure_msg + str(response.data))
+        Skill.objects.all().delete()
+
+    def test_should_create_entity_and_skill_already_exists(self):
+        url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
+
+        # New entity should contain skills from JSON + existing skill
+        self.new_entity_data['skills'] = self.new_skills_data+[self.skill1data]
+        request = self.factory.post(url, data = json.dumps(self.new_entity_data), content_type='application/json')
+        request.user = self.admin
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request.session.save()
+
+        view = EntityViewSet.as_view({'post': 'create'})
+        response = view(request, parent_lookup_profile='alice')
+
+        failure_msg = "Admin should be able to add entity to user. "
+        self.assertEqual(response.status_code, 201, failure_msg + str(response.data))
+
+        failure_msg = "User skills should've been added. "
+        self.assertEqual(len(response.data['skills']), len(self.new_entity_data['skills'] ), failure_msg + str(response.data))
+        Skill.objects.all().delete()

@@ -22,10 +22,13 @@ class UserSkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserSkill
-        fields = ('profile', 'name', 'type', 'level')
+        fields=('profile', 'name', 'type', 'level')
 
     def create(self, validated_data):
+        print("USER SKILL CREATE")
         # Get or create skills
+        block_pprint("VALID", validated_data)
+        block_pprint("INIT", self.initial_data)
         skills_data = validated_data.pop('skill', None)
         try:
             skill = Skill.objects.get(name=skills_data['name'])
@@ -46,14 +49,24 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = ('name', 'type')
         model = Skill
 
+    def create(self, validated_data):
+        print("SKILL CREATE")
+        return super(SkillSerializer, self).create(validated_data)
+
 
 class EntitySerializer(serializers.ModelSerializer):
-    skills = UserSkillSerializer(source='userskill_set',many=True, read_only=True)
+    skills = SkillSerializer(many=True, required=False)
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = Entity
         fields = ('city', 'country', 'skills', 'links')
+
+    def validate_skills(self, value):
+        print(value)
+        if Skill.objects.filter(**value).count():
+            print("EXISTS")
+        return value
 
     def get_links(self, obj):
         request = self.context['request']
@@ -69,6 +82,7 @@ class EntitySerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        print("ENTITY CREATE")
         # Get user
         username = self.context['view'].kwargs['parent_lookup_profile']
         user = User.objects.get(username=username)
@@ -86,9 +100,6 @@ class EntitySerializer(serializers.ModelSerializer):
             userskill_serializer.is_valid(raise_exception=True)
             userskill_serializer.save()
         return entity
-
-    def update(self, instance, validated_data):
-        pass
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

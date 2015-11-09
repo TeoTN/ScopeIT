@@ -91,6 +91,9 @@ class Entity(models.Model):
     def __str__(self):
         return "<Entity: user={}>".format(str(self.user_profile.user.username))
 
+    class Meta:
+        verbose_name_plural = "entities"
+
 
 class UserSkill(models.Model):
     EXPERT = 5
