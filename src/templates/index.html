@@ -33,7 +33,7 @@
             <ul class="nav navbar-nav">
                 <li><a href="/accounts/profile/">Profile</a></li>
                 {% if request.user.is_superuser %}
-                <li><a href="/api/">API</a></li>
+                <li><a href="{% url 'api:api-root' %}">API</a></li>
                 <li><a href="/admin/">Admin page</a></li>
                 {% endif %}
             </ul>

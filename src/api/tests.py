@@ -7,7 +7,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from rest_framework.test import APIRequestFactory
 
 from api.accounts.views import UserProfileViewSet, SkillsViewSet, EntityViewSet
-from accounts.models import Skill, Entity, UserProfile
+from accounts.models import Skill, Entity, UserProfile, UserSkill
 
 import json
 
@@ -254,16 +254,20 @@ class TestEntityAsAdmin(TestCase):
         }
         self.new_skills_data = [
             {
-                'level': 4,
-                'skill': 'C++',
-                'skill_type': Skill.LANGUAGE
+                'level': UserSkill.ADVANCED,
+                'name': 'Erlang',
+                'type': Skill.LANGUAGE
+            },
+            {
+                'level': UserSkill.INTERMEDIATE,
+                'name': 'Python',
+                'type': Skill.LANGUAGE
             }
         ]
 
     def test_should_create_entity(self):
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
-
-        request = self.factory.post(url, data = self.new_entity_data)
+        request = self.factory.post(url, data = json.dumps(self.new_entity_data), content_type='application/json')
         request.user = self.admin
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
@@ -279,8 +283,7 @@ class TestEntityAsAdmin(TestCase):
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
 
         self.new_entity_data['skills'] = self.new_skills_data
-
-        request = self.factory.post(url, data=self.new_entity_data)
+        request = self.factory.post(url, data = json.dumps(self.new_entity_data), content_type='application/json')
         request.user = self.admin
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()

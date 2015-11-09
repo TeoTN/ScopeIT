@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.reverse import reverse
 from rest_framework import serializers
@@ -6,22 +7,45 @@ from rest_framework import serializers
 from accounts.models import UserProfile, Skill, UserSkill, Entity
 
 
-class SkillSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Skill
+def block_pprint(name, variable):
+    from pprint import pprint
+    hh = '='*(25-len(name)//2)
+    line = hh + name + hh
+    print(line)
+    pprint(variable)
+    print(50*'=')
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
-    skill = serializers.CharField(source='skill.name')
-    skill_type = serializers.CharField(source='skill.type')
+    name = serializers.CharField(source='skill.name')
+    type = serializers.CharField(source='skill.type')
 
     class Meta:
-        fields = ('skill', 'skill_type', 'level')
         model = UserSkill
+        fields=('profile', 'name', 'type', 'level')
+
+    def create(self, validated_data):
+        # Get or create skills
+        skills_data = validated_data.pop('skill', None)
+        skill_serializer = SkillSerializer(data=skills_data)
+        skill_serializer.is_valid(raise_exception=True)
+        skill = skill_serializer.save()
+
+        validated_data['skill'] = skill
+        userskill = super(UserSkillSerializer, self).create(validated_data)
+
+        return userskill
+
+
+class SkillSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('name', 'type')
+        model = Skill
 
 
 class EntitySerializer(serializers.ModelSerializer):
-    skills = UserSkillSerializer(many=True)
+    skills = SkillSerializer(many=True, required=False)
     links = serializers.SerializerMethodField()
 
     class Meta:
@@ -42,21 +66,24 @@ class EntitySerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        # Get user
         username = self.context['view'].kwargs['parent_lookup_profile']
         user = User.objects.get(username=username)
-        skills = validated_data.pop('skills')
+
+        # Create entity
+        validated_data.pop("skills", None)
         entity = Entity(**validated_data)
         entity.user_profile = user.userprofile
-        self.assign_skills(entity, skills)
         entity.save()
-        return entity
 
-    def assign_skills(self, entity, skills):
-        for skill_data in skills:
-            from pprint import pprint
-            pprint(skill_data)
-            skill = Skill.objects.get_or_create(name=skill_data['skill'], type=skill_data['skill_type'])
-            UserSkill.objects.get_or_create(level=skill_data['level'], skill=skill, entity=entity)
+        skills_data = self.initial_data.get('skills', None)
+        if skills_data:
+            skills_data = [dict(skill, profile=entity.pk) for skill in skills_data]
+            userskill_serializer = UserSkillSerializer(data=skills_data, many=True)
+            userskill_serializer.is_valid(raise_exception=True)
+            userskill_serializer.save()
+
+        return entity
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
