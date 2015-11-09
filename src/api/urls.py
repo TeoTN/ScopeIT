@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from django.conf.urls import include, url
-
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 
 from api.accounts.views import UserProfileViewSet, EntityViewSet, SkillsViewSet

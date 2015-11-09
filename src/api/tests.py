@@ -117,7 +117,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UserProfileViewSet.as_view({'get':'retrieve'})
+        view = UserProfileViewSet.as_view({'get': 'retrieve'})
         response = view(request, pk=self.user1.pk)
         self.assertEqual(response.status_code, 200, "User should be able to access his/her profile")
 
@@ -133,7 +133,7 @@ class TestUsersViewSetAsUser(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
 
-        view = UserProfileViewSet.as_view({'get':'retrieve'})
+        view = UserProfileViewSet.as_view({'get': 'retrieve'})
         response = view(request, pk=self.user2.pk)
         self.assertEqual(response.status_code, 403, 'User should not have access to others profile')
 
@@ -274,7 +274,7 @@ class TestEntityAsAdmin(TestCase):
 
     def test_should_create_entity(self):
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
-        request = self.factory.post(url, data = json.dumps(self.new_entity_data), content_type='application/json')
+        request = self.factory.post(url, data=json.dumps(self.new_entity_data), content_type='application/json')
         request.user = self.admin
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
@@ -290,7 +290,7 @@ class TestEntityAsAdmin(TestCase):
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
 
         self.new_entity_data['skills'] = self.new_skills_data
-        request = self.factory.post(url, data = json.dumps(self.new_entity_data), content_type='application/json')
+        request = self.factory.post(url, data=json.dumps(self.new_entity_data), content_type='application/json')
         request.user = self.admin
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
@@ -310,7 +310,7 @@ class TestEntityAsAdmin(TestCase):
 
         # New entity should contain skills from JSON + existing skill
         self.new_entity_data['skills'] = self.new_skills_data+[self.skill1data]
-        request = self.factory.post(url, data = json.dumps(self.new_entity_data), content_type='application/json')
+        request = self.factory.post(url, data=json.dumps(self.new_entity_data), content_type='application/json')
         request.user = self.admin
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
@@ -322,5 +322,5 @@ class TestEntityAsAdmin(TestCase):
         self.assertEqual(response.status_code, 201, failure_msg + str(response.data))
 
         failure_msg = "User skills should've been added. "
-        self.assertEqual(len(response.data['skills']), len(self.new_entity_data['skills'] ), failure_msg + str(response.data))
+        self.assertEqual(len(response.data['skills']), len(self.new_entity_data['skills']), failure_msg + str(response.data))  # noqa
         Skill.objects.all().delete()

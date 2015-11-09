@@ -10,13 +10,13 @@ class IsObjectOwnerOrAdmin(BasePermission):
     """
     def has_permission(self, request, view):
         return view.action == 'retrieve' or \
-               request.user.is_staff or \
-               request.user.is_superuser
+            request.user.is_staff or \
+            request.user.is_superuser
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj or \
-               request.user.is_staff or \
-               request.user.is_superuser
+            request.user.is_staff or \
+            request.user.is_superuser
 
 
 class IsAdminOrReadOnly(BasePermission):
@@ -25,8 +25,8 @@ class IsAdminOrReadOnly(BasePermission):
     """
     def has_permission(self, request, view):
         return request.user.is_staff or \
-               request.user.is_superuser or \
-               request.method in SAFE_METHODS
+            request.user.is_superuser or \
+            request.method in SAFE_METHODS
 
 
 class IsAdminOrOwnerOrReadOnly(BasePermission):
@@ -39,22 +39,20 @@ class IsAdminOrOwnerOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         return view.action == 'retrieve'
 
-
     def has_object_permission(self, request, view, obj):
         return request.user.is_staff or \
-               request.user.is_superuser or \
-               request.method in SAFE_METHODS or \
-               request.user == obj
+            request.user.is_superuser or \
+            request.method in SAFE_METHODS or \
+            request.user == obj
 
 
 class UserPermissionScheme(BasePermission):
     def has_permission(self, request, view):
-        return (view.action != 'list' and \
-                view.action != 'create') or \
-               request.user.is_staff or \
-               request.user.is_superuser
+        return (view.action != 'list' and view.action != 'create') or \
+            request.user.is_staff or \
+            request.user.is_superuser
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj or \
-               request.user.is_staff or \
-               request.user.is_superuser
+            request.user.is_staff or \
+            request.user.is_superuser

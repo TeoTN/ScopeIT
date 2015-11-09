@@ -49,7 +49,7 @@ class EducationTier(models.Model):
 
     degree = models.IntegerField(choices=DEGREES, null=False)
     completed = models.BooleanField()
-    university = models.CharField(max_length=100, null=False) #TODO This could be normalized
+    university = models.CharField(max_length=100, null=False)  # TODO This could be normalized
 
 
 class Certificate(models.Model):

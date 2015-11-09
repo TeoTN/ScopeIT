@@ -1,5 +1,3 @@
-from django import forms
-
 import autocomplete_light.shortcuts as autocomplete_light
 
 from .models import Entity, Skill

@@ -1,8 +1,8 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
-from rest_framework_extensions.mixins import DetailSerializerMixin, NestedViewSetMixin
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from .serializers import (
     SkillSerializer,

@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.reverse import reverse
 from rest_framework import serializers
@@ -48,7 +47,7 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class EntitySerializer(serializers.ModelSerializer):
-    skills = UserSkillSerializer(source='userskill_set',many=True, read_only=True)
+    skills = UserSkillSerializer(source='userskill_set', many=True, read_only=True)
     links = serializers.SerializerMethodField()
 
     class Meta:
@@ -101,9 +100,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_links(self, obj):
         request = self.context['request']
         entity_relative_url = reverse('api:entity-list',
-                                   kwargs={
-                                       'parent_lookup_profile': obj.user.username
-                                   })
+                                      kwargs={
+                                          'parent_lookup_profile': obj.user.username
+                                      })
         entity_absolute_url = request.build_absolute_uri(entity_relative_url)
         return {
             'entities': entity_absolute_url
