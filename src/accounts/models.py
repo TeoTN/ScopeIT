@@ -23,7 +23,7 @@ class Skill(models.Model):
     type = models.CharField(max_length=8, null=False)
 
     def __str__(self):
-        return self.name
+        return "<Skill: {}>".format(self.name)
 
 
 class Language(models.Model):
@@ -70,6 +70,9 @@ class UserProfile(models.Model):
     def get_job_profiles(self):
         return self.profile_set
 
+    def __str__(self):
+        return "<UserProfile: {}>".format(self.user.username)
+
 
 class Entity(models.Model):
     """
@@ -84,6 +87,9 @@ class Entity(models.Model):
     languages = models.ManyToManyField(Language)
     education_tiers = models.ManyToManyField(EducationTier)
     certificates = models.ManyToManyField(Certificate)
+
+    def __str__(self):
+        return "<Entity: user={}>".format(str(self.user_profile.user.username))
 
 
 class UserSkill(models.Model):
@@ -102,3 +108,8 @@ class UserSkill(models.Model):
     profile = models.ForeignKey(Entity)
     skill = models.ForeignKey(Skill)
     level = models.IntegerField(default=0, choices=LEVELS)
+
+    def __str__(self):
+        user = str(self.profile.user_profile.user.username)
+        skill = str(self.skill.name)
+        return "<Skill: user={} skill={} level={}>".format(user, skill, self.level)
