@@ -87,7 +87,17 @@ class EntitySerializer(serializers.ModelSerializer):
         return entity
 
     def update(self, instance, validated_data):
-        pass
+        validated_data.pop("skills", None)
+        instance = Entity(pk=instance.pk, **validated_data)
+
+        skills_data = self.initial_data.get('skills', None)
+        if skills_data:
+            instance.skills.clear()
+            skills_data = [dict(skill, profile=instance.pk) for skill in skills_data]
+            userskill_serializer = UserSkillSerializer(data=skills_data, many=True)
+            userskill_serializer.is_valid(raise_exception=True)
+            userskill_serializer.save()
+        return instance
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

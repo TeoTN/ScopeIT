@@ -49,6 +49,8 @@ class EntityViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = EntitySerializer
 
     def get_queryset(self):
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return Entity.objects.all()
         return Entity.objects.filter(user_profile__user=self.request.user)
 
 

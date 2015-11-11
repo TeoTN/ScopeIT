@@ -248,30 +248,29 @@ class TestSkillsViewSet(TestCase):
         self.assertEqual(response.status_code, 403, format_failure_message(failure_msg, response.data))
 
 
-class TestEntityAsAdmin(TestCase):
+class TestEntityViewSetAsAdmin(TestCase):
     fixtures = ['users', 'skills', 'user_profile']
 
     def setUp(self):
         self.admin = User.objects.get(username='admin')
         self.user1 = User.objects.get(username='alice')
         self.skill1 = Skill.objects.get(name='Python')
+        self.number_of_skills = Skill.objects.all().count()
         self.user1_profile = UserProfile.objects.get(user=self.user1)
         
         self.new_entity_data = {
             'city': 'Wroclaw',
             'country': 'Poland',
         }
-        
-        self.skill1_data = {
-            'name': 'Scheme',
-            'type': Skill.LANGUAGE,
-            'level': UserSkill.BEGINNER
+        self.new_entity_data2 = {
+            'city': 'Paris',
+            'country': 'France',
         }
 
         self.new_skills_data = [
             {
                 'level': UserSkill.ADVANCED,
-                'name': 'Erlang',
+                'name': 'Scheme',  # NOTICE: This skill must not be in fixture
                 'type': Skill.LANGUAGE
             },
             {
@@ -282,6 +281,9 @@ class TestEntityAsAdmin(TestCase):
         ]
 
     def test_should_create_entity(self):
+        """
+        Admin should be able to create an entity for a user.
+        """
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
         request = factory.post(url, data=json.dumps(self.new_entity_data), content_type='application/json')
         force_authenticate(request, user=self.admin)
@@ -291,9 +293,12 @@ class TestEntityAsAdmin(TestCase):
 
         failure_msg = "Admin should be able to add entity to user. "
         self.assertEqual(response.status_code, 201, format_failure_message(failure_msg, response.data))
-        Entity.objects.all().delete()
 
     def test_should_create_entity_and_skills(self):
+        """
+            It should be possible to create the entity for Alice.
+            NOTICE: In fixture it is the bob who doesn't have user profile
+        """
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
 
         self.new_entity_data['skills'] = self.new_skills_data
@@ -307,16 +312,90 @@ class TestEntityAsAdmin(TestCase):
         self.assertEqual(response.status_code, 201, format_failure_message(failure_msg, response.data))
 
         failure_msg = "User skills should've been added. "
-        self.assertEqual(len(response.data['skills']), len(self.new_skills_data), format_failure_message(failure_msg, response.data))
-        Skill.objects.all().delete()
+        self.assertEqual(len(response.data['skills']),
+                         len(self.new_skills_data),
+                         format_failure_message(failure_msg, response.data))
 
-    def test_should_create_entity_and_skill_already_exists(self):
+        failure_msg = "New skill should have been created."
+        self.assertEqual(Skill.objects.all().count(), self.number_of_skills + 1, failure_msg)
+
+    def test_should_retrieve_entity(self):
+        """
+        Admin should be able to retrieve entity.
+        """
+        entity, _ = Entity.objects.get_or_create(user_profile=self.user1_profile, **self.new_entity_data2)
+
+        url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': self.user1.username, 'pk': entity.pk})
+        request = factory.get(url, data=self.new_entity_data)
+        force_authenticate(request, user=self.admin)
+
+        view = EntityViewSet.as_view({'get': 'retrieve'})
+        response = view(request, parent_lookup_profile='alice', pk=entity.pk)
+
+        failure_msg = "Admin should be able to retrieve user entity."
+        self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
+
+    def test_should_update_entity(self):
+        """
+        Admin should be able to update user entity.
+        """
+        entity, _ = Entity.objects.get_or_create(user_profile=self.user1_profile, **self.new_entity_data2)
+        url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': self.user1.username, 'pk': entity.pk})
+        request = factory.put(url, data=self.new_entity_data)
+        force_authenticate(request, user=self.admin)
+
+        view = EntityViewSet.as_view({'put': 'update'})
+        response = view(request, parent_lookup_profile='alice', pk=entity.pk)
+
+        failure_msg = "Admin should be able to update user entity."
+        self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
+        self.assertNotEqual(response.data['city'],
+                         self.new_entity_data2['city'],
+                         format_failure_message(failure_msg, response.data))
+        entity.delete()
+
+
+class TestEntityViewSetAsUser(TestCase):
+    fixtures = ['users', 'skills', 'user_profile']
+
+    def setUp(self):
+        self.user1 = User.objects.get(username='alice')
+        self.skill1 = Skill.objects.get(name='Python')
+        self.number_of_skills = Skill.objects.all().count()
+        self.user1_profile = UserProfile.objects.get(user=self.user1)
+
+        self.new_entity_data = {
+            'city': 'Wroclaw',
+            'country': 'Poland',
+        }
+        self.new_entity_data2 = {
+            'city': 'Paris',
+            'country': 'France',
+        }
+
+        self.new_skills_data = [
+            {
+                'level': UserSkill.ADVANCED,
+                'name': 'Scheme',  # NOTICE: This skill must not be in fixture
+                'type': Skill.LANGUAGE
+            },
+            {
+                'level': UserSkill.INTERMEDIATE,
+                'name': 'Python',
+                'type': Skill.LANGUAGE
+            }
+        ]
+
+    def test_should_create_entity_and_skills(self):
+        """
+            User Alice should be able to create herself an entity with skills.
+            NOTICE: In fixture it is Bob who doesn't have user profile
+        """
         url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
 
-        # New entity should contain skills from JSON + existing skill
-        self.new_entity_data['skills'] = self.new_skills_data+[self.skill1_data]
+        self.new_entity_data['skills'] = self.new_skills_data
         request = factory.post(url, data=json.dumps(self.new_entity_data), content_type='application/json')
-        force_authenticate(request, user=self.admin)
+        force_authenticate(request, user=self.user1)
 
         view = EntityViewSet.as_view({'post': 'create'})
         response = view(request, parent_lookup_profile='alice')
@@ -325,10 +404,62 @@ class TestEntityAsAdmin(TestCase):
         self.assertEqual(response.status_code, 201, format_failure_message(failure_msg, response.data))
 
         failure_msg = "User skills should've been added. "
-        self.assertEqual(len(response.data['skills']), len(self.new_entity_data['skills']), format_failure_message(failure_msg, response.data))  # noqa
-        Skill.objects.all().delete()
+        self.assertEqual(len(response.data['skills']),
+                         len(self.new_skills_data),
+                         format_failure_message(failure_msg, response.data))
+
+        failure_msg = "New skill should have been created."
+        self.assertEqual(Skill.objects.all().count(), self.number_of_skills + 1, failure_msg)
+
+    def test_should_retrieve_entity(self):
+        """
+        User alice should be able to retrieve her entity
+        """
+        entity, _ = Entity.objects.get_or_create(user_profile=self.user1_profile, **self.new_entity_data2)
+
+        url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': self.user1.username, 'pk': entity.pk})
+        request = factory.get(url, data=self.new_entity_data)
+        force_authenticate(request, user=self.user1)
+
+        view = EntityViewSet.as_view({'get': 'retrieve'})
+        response = view(request, parent_lookup_profile='alice', pk=entity.pk)
+
+        failure_msg = "Admin should be able to retrieve user entity."
+        self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
 
     def test_should_update_entity(self):
+        """
+        User alice should be able to update her entity
+        """
+        entity, _ = Entity.objects.get_or_create(user_profile=self.user1_profile, **self.new_entity_data2)
+        url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': self.user1.username, 'pk': entity.pk})
+        request = factory.put(url, data=self.new_entity_data)
+        force_authenticate(request, user=self.user1)
 
-        #url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': 'alice'})
+        view = EntityViewSet.as_view({'put': 'update'})
+        response = view(request, parent_lookup_profile='alice', pk=entity.pk)
+
+        failure_msg = "Admin should be able to update user entity."
+        self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
+        self.assertNotEqual(response.data['city'],
+                         self.new_entity_data2['city'],
+                         format_failure_message(failure_msg, response.data))
+        entity.delete()
+
+    def test_should_not_retrieve_entity(self):
+        """
+        User bob shouldn't be able to retrieve alice entity
+        """
+        raise NotImplementedError
+
+    def test_should_not_update_entity(self):
+        """
+        User bob shouldn't be able to update alice entity
+        """
+        raise NotImplementedError
+
+    def test_should_not_create_entity(self):
+        """
+        User bob shouldn't be able to create an entity for alice
+        """
         raise NotImplementedError
