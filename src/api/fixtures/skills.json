@@ -1,0 +1,30 @@
+[
+{
+    "fields": {
+        "type": "LNG"
+    },
+    "pk": "C++",
+    "model": "accounts.skill"
+},
+{
+    "fields": {
+        "type": "LNG"
+    },
+    "pk": "Erlang",
+    "model": "accounts.skill"
+},
+{
+    "fields": {
+        "type": "LNG"
+    },
+    "pk": "Haskell",
+    "model": "accounts.skill"
+},
+{
+    "fields": {
+        "type": "LNG"
+    },
+    "pk": "Python",
+    "model": "accounts.skill"
+}
+]

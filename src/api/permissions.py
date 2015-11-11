@@ -1,58 +1,46 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission, SAFE_METHODS
 
 
-class IsObjectOwnerOrAdmin(BasePermission):
+class IsObjectOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user.username == obj.user.username
+
+
+class IsPostRequest(BasePermission):
+    def has_permission(self, request, view):
+        return request.method == "POST"
+
+
+class IsRequestUser(BasePermission):
     """
-    This permission is used to grant access only to a user which is in staff group or is owner of given object.
-    Method has_permission is superior to the has_object_permission.
-    Method has_permission will deny access to non-administrative account accessing to the list of users.
-    Method has_object_permission will grant access to user trying to view his/her own profile or to admin.
+    Check if data sent to API contain user equal to request user
     """
     def has_permission(self, request, view):
-        return view.action == 'retrieve' or \
-            request.user.is_staff or \
-            request.user.is_superuser
+        return request.data.get('user', None) == request.user.username
+
+
+class UserProfilePermission(BasePermission):
+    """
+    Authentication scheme:
+        GET     -> admin or action is retrieve
+        POST    -> request user or admin
+        PUT     -> admin or owner
+        DELETE  -> request user or admin
+        PATCH   -> owner or admin
+    """
+    def has_permission(self, request, view):
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if is_admin:
+            return True
+        if request.method in SAFE_METHODS:
+            return view.action == 'retrieve'
+        if request.method == 'POST':
+            is_post = IsPostRequest().has_permission(request, view)
+            is_req_user = IsRequestUser().has_permission(request, view)
+            return (is_req_user and is_post)
+        return True  # Continue to has_object_permission
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj or \
-            request.user.is_staff or \
-            request.user.is_superuser
-
-
-class IsAdminOrReadOnly(BasePermission):
-    """
-    This permission will grant access only to safe methods (e.g. GET) unless request comes from admin
-    """
-    def has_permission(self, request, view):
-        return request.user.is_staff or \
-            request.user.is_superuser or \
-            request.method in SAFE_METHODS
-
-
-class IsAdminOrOwnerOrReadOnly(BasePermission):
-    """
-    This permission will grant access to list when:
-    1. Request user is admin
-    2. Requested method is in SAFE_METHODS
-    3. User is owner of updated data
-    """
-    def has_permission(self, request, view):
-        return view.action == 'retrieve'
-
-    def has_object_permission(self, request, view, obj):
-        return request.user.is_staff or \
-            request.user.is_superuser or \
-            request.method in SAFE_METHODS or \
-            request.user == obj
-
-
-class UserPermissionScheme(BasePermission):
-    def has_permission(self, request, view):
-        return (view.action != 'list' and view.action != 'create') or \
-            request.user.is_staff or \
-            request.user.is_superuser
-
-    def has_object_permission(self, request, view, obj):
-        return request.user == obj or \
-            request.user.is_staff or \
-            request.user.is_superuser
+        is_admin = request.user.is_staff or request.user.is_superuser
+        is_owner = IsObjectOwner().has_object_permission(request, view, obj)
+        return is_admin or is_owner

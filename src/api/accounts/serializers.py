@@ -91,11 +91,12 @@ class EntitySerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = ('is_employer', 'links')
+        fields = ('user', 'is_employer', 'links')
 
     def get_links(self, obj):
         request = self.context['request']
@@ -107,18 +108,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return {
             'entities': entity_absolute_url
         }
-
-    def create(self, validated_data):
-        user = validated_data.pop('user')
-        username = user.get('username', None)
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            message = "User {} does not exist.".format(username)
-            raise serializers.ValidationError(message)
-
-        return UserProfile.objects.create(user=user, **validated_data)
-
-    def update(self, instance, validated_data):
-        instance.update(**validated_data)
-        instance.save()

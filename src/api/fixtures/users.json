@@ -1,0 +1,56 @@
+[
+{
+    "fields": {
+        "is_superuser": true,
+        "last_name": "",
+        "username": "admin",
+        "last_login": "2015-11-08T20:30:47.256Z",
+        "date_joined": "2015-11-03T19:28:10.911Z",
+        "is_active": true,
+        "groups": [],
+        "user_permissions": [],
+        "first_name": "",
+        "password": "pbkdf2_sha256$20000$PKllcxycZp0R$IOxMb4a5sZWsfuXGFYjri8QaLJwd9tdQic6XtWLBJKg=",
+        "email": "admin@scopeit.com",
+        "is_staff": true
+    },
+    "model": "auth.user",
+    "pk": 1
+},
+{
+    "fields": {
+        "is_superuser": false,
+        "last_name": "Smith",
+        "username": "alice",
+        "last_login": "2015-11-01T00:00:00.000Z",
+        "date_joined": "2015-11-01T00:00:00.000Z",
+        "is_active": true,
+        "groups": [],
+        "user_permissions": [],
+        "first_name": "Alice",
+        "password": "pbkdf2_sha256$20000$nQQvXeL69XC6$9GnAijOI3+U12ZWaKqKFbi0JKgnumDfnSxXckHJt6gI=",
+        "email": "alice@testers.com",
+        "is_staff": false
+    },
+    "model": "auth.user",
+    "pk": 2
+},
+{
+    "fields": {
+        "is_superuser": false,
+        "last_name": "Smith",
+        "username": "bob",
+        "last_login": "2015-11-01T00:00:00.000Z",
+        "date_joined": "2015-11-01T00:00:00.000Z",
+        "is_active": true,
+        "groups": [],
+        "user_permissions": [],
+        "first_name": "Bob",
+        "password": "pbkdf2_sha256$20000$bdcvli0VlHBT$Wnh26CdwbovvDDrUfID4iz4/4ZjCBR7tDo11cDVZ8cE=",
+        "email": "bob@testers.com",
+        "is_staff": false
+    },
+    "model": "auth.user",
+    "pk": 3
+}
+]

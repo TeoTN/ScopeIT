@@ -1,0 +1,22 @@
+[
+{
+    "model": "accounts.userprofile",
+    "pk": 1,
+    "fields": {
+        "is_employer": true,
+        "matches": [],
+        "user": 1,
+        "matched_by": []
+    }
+},
+{
+    "model": "accounts.userprofile",
+    "pk": 2,
+    "fields": {
+        "is_employer": false,
+        "matches": [],
+        "user": 2,
+        "matched_by": []
+    }
+}
+]

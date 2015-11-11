@@ -19,6 +19,6 @@ profile_routes.register('entity',
 
 router.register('skills',
                 SkillsViewSet,
-                base_name='skills')
+                base_name='skill')
 
 urlpatterns = router.urls
