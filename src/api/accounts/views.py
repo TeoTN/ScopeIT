@@ -17,7 +17,7 @@ from accounts.models import (
     UserProfile,
     Entity,
 )
-from api.permissions import UserProfilePermission
+from api.permissions import UserProfilePermission, EntityPermission
 
 
 class UserProfileViewSet(NestedViewSetMixin, ModelViewSet):
@@ -47,6 +47,7 @@ class EntityViewSet(NestedViewSetMixin, ModelViewSet):
      offerings which can be interpreted either as a job ad (posted by employer) or as a applicant characteristics.
     """
     serializer_class = EntitySerializer
+    permission_classes = (IsAuthenticated, EntityPermission)
 
     def get_queryset(self):
         if self.request.user.is_staff or self.request.user.is_superuser:

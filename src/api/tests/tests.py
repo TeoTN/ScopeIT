@@ -360,6 +360,7 @@ class TestEntityViewSetAsUser(TestCase):
 
     def setUp(self):
         self.user1 = User.objects.get(username='alice')
+        self.user2 = User.objects.get(username='bob')
         self.skill1 = Skill.objects.get(name='Python')
         self.number_of_skills = Skill.objects.all().count()
         self.user1_profile = UserProfile.objects.get(user=self.user1)
@@ -400,7 +401,7 @@ class TestEntityViewSetAsUser(TestCase):
         view = EntityViewSet.as_view({'post': 'create'})
         response = view(request, parent_lookup_profile='alice')
 
-        failure_msg = "Admin should be able to add entity to user. "
+        failure_msg = "User should be able to add itself an entity. "
         self.assertEqual(response.status_code, 201, format_failure_message(failure_msg, response.data))
 
         failure_msg = "User skills should've been added. "
@@ -424,7 +425,7 @@ class TestEntityViewSetAsUser(TestCase):
         view = EntityViewSet.as_view({'get': 'retrieve'})
         response = view(request, parent_lookup_profile='alice', pk=entity.pk)
 
-        failure_msg = "Admin should be able to retrieve user entity."
+        failure_msg = "User should be able to retrieve its entity."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
 
     def test_should_update_entity(self):
@@ -439,7 +440,7 @@ class TestEntityViewSetAsUser(TestCase):
         view = EntityViewSet.as_view({'put': 'update'})
         response = view(request, parent_lookup_profile='alice', pk=entity.pk)
 
-        failure_msg = "Admin should be able to update user entity."
+        failure_msg = "User should be able to update its entity."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
         self.assertNotEqual(response.data['city'],
                          self.new_entity_data2['city'],
@@ -450,16 +451,44 @@ class TestEntityViewSetAsUser(TestCase):
         """
         User bob shouldn't be able to retrieve alice entity
         """
-        raise NotImplementedError
+        entity, _ = Entity.objects.get_or_create(user_profile=self.user1_profile, **self.new_entity_data2)
+
+        url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': self.user1.username, 'pk': entity.pk})
+        request = factory.get(url, data=self.new_entity_data)
+        force_authenticate(request, user=self.user2)
+
+        view = EntityViewSet.as_view({'get': 'retrieve'})
+        response = view(request, parent_lookup_profile='alice', pk=entity.pk)
+
+        failure_msg = "User should be able to retrieve others entity."
+        self.assertEqual(response.status_code, 404, format_failure_message(failure_msg, response.data))
 
     def test_should_not_update_entity(self):
         """
         User bob shouldn't be able to update alice entity
         """
-        raise NotImplementedError
+        entity, _ = Entity.objects.get_or_create(user_profile=self.user1_profile, **self.new_entity_data2)
+        url = reverse('api:entity-detail', kwargs={'parent_lookup_profile': self.user1.username, 'pk': entity.pk})
+        request = factory.put(url, data=self.new_entity_data)
+        force_authenticate(request, user=self.user2)
+
+        view = EntityViewSet.as_view({'put': 'update'})
+        response = view(request, parent_lookup_profile='alice', pk=entity.pk)
+
+        failure_msg = "User should be able to update its entity."
+        self.assertEqual(response.status_code, 404, format_failure_message(failure_msg, response.data))
+        entity.delete()
 
     def test_should_not_create_entity(self):
         """
         User bob shouldn't be able to create an entity for alice
         """
-        raise NotImplementedError
+        url = reverse('api:entity-list', kwargs={'parent_lookup_profile': 'alice'})
+        request = factory.post(url, data=json.dumps(self.new_entity_data), content_type='application/json')
+        force_authenticate(request, user=self.user2)
+
+        view = EntityViewSet.as_view({'post': 'create'})
+        response = view(request, parent_lookup_profile='alice')
+
+        failure_msg = "User should not be able to add someone else an entity."
+        self.assertEqual(response.status_code, 403, format_failure_message(failure_msg, response.data))
