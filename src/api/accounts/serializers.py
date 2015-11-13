@@ -6,15 +6,6 @@ from rest_framework import serializers
 from accounts.models import UserProfile, Skill, UserSkill, Entity
 
 
-def block_pprint(name, variable):
-    from pprint import pprint
-    hh = '='*(25-len(name)//2)
-    line = hh + name + hh
-    print(line)
-    pprint(variable)
-    print(50*'=')
-
-
 class UserSkillSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='skill.name')
     type = serializers.CharField(source='skill.type')
@@ -115,6 +106,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
                                           'parent_lookup_profile': obj.user.username
                                       })
         entity_absolute_url = request.build_absolute_uri(entity_relative_url)
+        self_relative_url = reverse('api:user-profile-detail',
+                           kwargs={
+                               'user__username': obj.user.username
+                           })
+        self_absolute_url = request.build_absolute_uri(self_relative_url)
         return {
-            'entities': entity_absolute_url
+            'entities': entity_absolute_url,
+            'self': self_absolute_url,
         }

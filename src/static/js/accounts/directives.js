@@ -1,5 +1,5 @@
 (function(){
-    var app = angular.module('ScopeIT');
+    /*var app = angular.module('ScopeIT');
     app.directive("userProfile", function(){
         return {
             restrict: 'E',
@@ -25,5 +25,5 @@
             restrict: 'E',
             templateUrl: '/accounts/profile-form/',
         };
-    });
+    });*/
 })();

@@ -2,19 +2,19 @@
 {% load staticfiles account socialaccount common_extras %}
 
 {% block dependencies %}
-    <script src="{% static 'js/accounts/directives.js' %}"></script>
+    <!--<script src="{% static 'js/accounts/directives.js' %}"></script>-->
 {% endblock dependencies %}
 
 {% block content %}
     <h1>Hello, {% user_display user %}</h1>
     {% if user.userprofile %}
         {% if user.userprofile.is_employer %}
-            <user-profile></user-profile>
+            <entity></entity>
         {% else %}
-            <user-profile-list></user-profile-list>
+            <entity-list></entity-list>
         {% endif %}
     {% else %}
         <h3>Fill your profile</h3>
-        <profile-form></profile-form>
+        <entity-form></entity-form>
     {% endif %}
 {% endblock %}
