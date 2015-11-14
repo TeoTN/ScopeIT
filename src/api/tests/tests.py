@@ -1,8 +1,6 @@
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.urlresolvers import reverse
-from django.core import serializers
 from django.test import TestCase
-from django.contrib.sessions.middleware import SessionMiddleware
 
 from rest_framework.test import APIRequestFactory, force_authenticate
 
@@ -39,7 +37,7 @@ class TestUserProfileViewSetAsAdmin(TestCase):
 
         view = UserProfileViewSet.as_view({'get': 'list'})
         response = view(request)
-        
+
         failure_msg = "Admin should have access granted to the list of users' profiles."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
         self.assertEqual(len(response.data), UserProfile.objects.all().count())
@@ -55,7 +53,7 @@ class TestUserProfileViewSetAsAdmin(TestCase):
 
         view = UserProfileViewSet.as_view({'get': 'retrieve'})
         response = view(request, user__username=self.user1.username)
-        
+
         failure_msg = "Admin should be able to GET any profile."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
 
@@ -74,7 +72,7 @@ class TestUserProfileViewSetAsAdmin(TestCase):
 
         view = UserProfileViewSet.as_view({'post': 'create'})
         response = view(request)
-        
+
         failure_msg = "Admin should be able to create new profile for an existing user."
         self.assertEqual(response.status_code, 201, format_failure_message(failure_msg, response.data))
 
@@ -93,7 +91,7 @@ class TestUserProfileViewSetAsUser(TestCase):
 
         view = UserProfileViewSet.as_view({'get': 'list'})
         response = view(request)
-        
+
         failure_msg = "Users should not have access granted to the list of users"
         self.assertEqual(response.status_code, 403, failure_msg)
 
@@ -108,7 +106,7 @@ class TestUserProfileViewSetAsUser(TestCase):
 
         view = UserProfileViewSet.as_view({'get': 'retrieve'})
         response = view(request, user__username=self.user1.username)
-        
+
         failure_msg = "User should be able to access his/her profile"
         self.assertEqual(response.status_code, 200, failure_msg)
 
@@ -123,7 +121,7 @@ class TestUserProfileViewSetAsUser(TestCase):
 
         view = UserProfileViewSet.as_view({'get': 'retrieve'})
         response = view(request, user__username=self.user1.username)
-        
+
         failure_msg = 'User should not have access to a profile belonging to someone else.'
         self.assertEqual(response.status_code, 403, failure_msg)
 
@@ -180,7 +178,7 @@ class TestUserProfileViewSetAsUser(TestCase):
 
         view = UserProfileViewSet.as_view({'patch': 'partial_update'})
         response = view(request, user__username=self.user1.username)
-        
+
         failure_msg = "User should be able to update his/her profile."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
 
@@ -257,7 +255,7 @@ class TestEntityViewSetAsAdmin(TestCase):
         self.skill1 = Skill.objects.get(name='Python')
         self.number_of_skills = Skill.objects.all().count()
         self.user1_profile = UserProfile.objects.get(user=self.user1)
-        
+
         self.new_entity_data = {
             'city': 'Wroclaw',
             'country': 'Poland',
@@ -350,8 +348,8 @@ class TestEntityViewSetAsAdmin(TestCase):
         failure_msg = "Admin should be able to update user entity."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
         self.assertNotEqual(response.data['city'],
-                         self.new_entity_data2['city'],
-                         format_failure_message(failure_msg, response.data))
+                            self.new_entity_data2['city'],
+                            format_failure_message(failure_msg, response.data))
         entity.delete()
 
 
@@ -443,8 +441,8 @@ class TestEntityViewSetAsUser(TestCase):
         failure_msg = "User should be able to update its entity."
         self.assertEqual(response.status_code, 200, format_failure_message(failure_msg, response.data))
         self.assertNotEqual(response.data['city'],
-                         self.new_entity_data2['city'],
-                         format_failure_message(failure_msg, response.data))
+                            self.new_entity_data2['city'],
+                            format_failure_message(failure_msg, response.data))
         entity.delete()
 
     def test_should_not_retrieve_entity(self):

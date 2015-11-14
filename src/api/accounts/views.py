@@ -1,6 +1,6 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
 from rest_framework_extensions.mixins import NestedViewSetMixin
 

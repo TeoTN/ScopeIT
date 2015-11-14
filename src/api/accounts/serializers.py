@@ -107,9 +107,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
                                       })
         entity_absolute_url = request.build_absolute_uri(entity_relative_url)
         self_relative_url = reverse('api:user-profile-detail',
-                           kwargs={
-                               'user__username': obj.user.username
-                           })
+                                    kwargs={
+                                        'user__username': obj.user.username
+                                    })
         self_absolute_url = request.build_absolute_uri(self_relative_url)
         return {
             'entities': entity_absolute_url,
