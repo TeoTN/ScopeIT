@@ -2,7 +2,14 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
+
 from .forms import EntityForm
+
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
 
 
 class ProfileView(TemplateView):
