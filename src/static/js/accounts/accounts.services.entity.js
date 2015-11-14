@@ -12,7 +12,7 @@
             create: create,
             retrieve: retrieve,
             update: update,
-            list: list,
+            list: list
         };
         return Entity;
 
@@ -21,8 +21,7 @@
                 url: apiUrl + 'profiles/' + username + '/entity/' + pk,
                 method: 'GET',
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
         }
 
         function list(username) {
@@ -30,8 +29,7 @@
                 url: apiUrl + 'profiles/' + username + '/entity/',
                 method: 'GET',
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
         }
 
         function create(username, entity) {
@@ -40,8 +38,7 @@
                 method: 'POST',
                 data: entity
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
         }
 
         function update(username, pk, entity) {
@@ -50,8 +47,7 @@
                 method: 'PATCH',
                 data: entity
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
         }
     }
 })();

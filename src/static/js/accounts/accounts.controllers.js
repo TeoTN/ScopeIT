@@ -3,9 +3,13 @@
         .controller('EntityController', EntityController)
         .controller('EntityListController', EntityListController);
 
-    EntityController.$inject = ['$scope'];
-    function EntityController($scope) {}
+    EntityController.$inject = ['$scope', 'Entity'];
+    function EntityController($scope, $entity) {
 
-    EntityListController.$inject = ['$scope'];
-    function EntityListController($scope) {}
+    }
+
+    EntityListController.$inject = ['$scope', 'Entity'];
+    function EntityListController($scope, $entity) {
+        $entity.list();
+    }
 })();
