@@ -43,7 +43,7 @@ class EntitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Entity
-        fields = ('city', 'country', 'skills', 'links')
+        fields = ('title', 'city', 'country', 'skills', 'links')
 
     def get_links(self, obj):
         request = self.context['request']

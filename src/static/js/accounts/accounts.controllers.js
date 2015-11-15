@@ -27,10 +27,15 @@
         };
     }
 
-    EntityController.$inject = ['$scope', 'Entity'];
+    EntityController.$inject = ['$scope', 'Auth', 'Entity'];
 
-    function EntityController($scope, $entity) {
-
+    function EntityController($scope, $auth, $entity) {
+        var vm = this;
+        var username = $auth.get_username();
+        vm.remove = function(entity) {
+            $entity.remove(username, entity);
+            entity.deleted = true;
+        };
     }
 
     EntityListController.$inject = ['$scope', 'Auth', 'Entity'];

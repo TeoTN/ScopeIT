@@ -1,2 +1,2 @@
 <h3>Your job openings:</h3>
-<entity ng-repeat="entity in entity_list"></entity>
+<entity ng-repeat="entity in entity_list" ng-if="!entity.deleted"></entity>
