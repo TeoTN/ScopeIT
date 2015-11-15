@@ -7,29 +7,31 @@
     Auth.$inject = ['$http', '$cookies', '$rootScope', 'apiUrl'];
 
     function Auth($http, $cookies, $rootScope, apiUrl) {
+        var use_session = true,
+            auth_url = apiUrl + 'rest-auth/',
+            username = null;
+
         var Auth = {
-            http_request: http_request(),
+            http_request: http_request,
             register: register,
             login: login,
-            logout: logout
+            logout: logout,
+            get_username: get_username
         };
-
         return Auth;
 
-        var use_session = true,
-            authenticated = null,
-            authPromise = null;
+
 
         function http_request(request) {
             if($cookies.token) {
                 $http.defaults.headers.common.Authorization = 'Token ' + $cookies.token;
             }
             request = request || {};
-            var url = apiUrl + args.url,
+            var url = auth_url + request.url,
                 method = request.method || "GET",
                 data = request.data || {};
 
-            var request_promise = $http({
+            return $http({
                 url: url,
                 withCredentials: use_session,
                 method: method.toUpperCase(),
@@ -37,13 +39,13 @@
                     'X-CSRFToken': $cookies['csrftoken']
                 },
                 data: data
-            }).catch(request_error_callback);
+            });
         }
 
         function register(user_data) {
             return http_request({
                 method: "POST",
-                url: "/registration/",
+                url: "registration/",
                 data: user_data
             });
         }
@@ -51,7 +53,7 @@
         function login(username, password) {
             return http_request({
                 method: 'POST',
-                url: '/login/',
+                url: 'login/',
                 data: {
                     username: username,
                     password: password
@@ -61,26 +63,25 @@
                     $http.defaults.headers.common.Authorization = 'Token ' + data.key;
                     $cookies.token = data.key;
                 }
-                authenticated = true;
-                $rootScope.$broadcast("Auth.logged_in", data);
+                username = data.config.username;
+                return data;
             });
         }
 
         function logout() {
             return http_request({
                 method: 'POST',
-                url: '/logout/'
+                url: 'logout/'
             }).then(function(data){
                 delete $http.defaults.headers.common.Authorization;
                 delete $cookies.token;
-                authenticated = false;
-                $rootScope.$broadcast("Auth.logged_out");
+                username = null;
+                return data;
             });
         }
 
-        function request_error_callback(response) {
-            console.error("[ERROR] Unable to authenticate user.");
-            console.error(response);
+        function get_username() {
+            return username;
         }
     }
 })();

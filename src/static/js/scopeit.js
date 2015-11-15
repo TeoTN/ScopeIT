@@ -1,6 +1,7 @@
 (function() {
     'use strict';
     angular.module('scopeit', [
+        'ngCookies',
         'scopeit.config',
         'scopeit.common',
         'scopeit.accounts'
