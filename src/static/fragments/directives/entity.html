@@ -1,19 +1,17 @@
-<div class="col-sm-4">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                {{ entity.title }}
-            </h3>
-        </div>
-        <div class="panel-body">
-            <h5>Location:</h5>
-            <p class="text-info">{{ entity.city }}, {{ entity.country }}</p>
-        </div>
-        <div class="panel-footer no-padding">
-            <span class="text-muted with-margin">Actions: </span>
-            <button class="btn btn-sm btn-danger" ng-click="vm.remove(entity)">
-                <span class="glyphicon glyphicon-trash"></span>
-            </button>
-        </div>
+<div class="panel panel-primary" ng-show="entity">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{ entity.title }}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <h5>Location:</h5>
+        <p class="text-info">{{ entity.city }}, {{ entity.country }}</p>
+    </div>
+    <div class="panel-footer no-padding">
+        <span class="text-muted with-margin">Actions: </span>
+        <button class="btn btn-sm btn-danger" ng-click="vm.remove(entity)">
+            <span class="glyphicon glyphicon-trash"></span>
+        </button>
     </div>
 </div>

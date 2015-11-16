@@ -81,7 +81,7 @@ class Entity(models.Model):
      depending on his role: employer or applicant.
     """
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='profile_set')
-    title = models.CharField(max_length=30, null=True, blank=True)
+    title = models.CharField(max_length=30, null=False, blank=False, default="Your profile")
     skills = models.ManyToManyField(Skill, through='UserSkill')
     city = models.CharField(max_length=50, null=False, blank=False)
     country = models.CharField(max_length=30, null=False, blank=False)

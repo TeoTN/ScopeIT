@@ -7,14 +7,5 @@
 
 {% block content %}
     <h1>Hello, {% user_display user %}</h1>
-    {% if user.userprofile %}
-        {% if user.userprofile.is_employer %}
-            <entity></entity>
-        {% else %}
-            <entity-list></entity-list>
-        {% endif %}
-    {% else %}
-        <h3>Fill your profile</h3>
-        <entity-form></entity-form>
-    {% endif %}
+    <entity-list></entity-list>
 {% endblock %}

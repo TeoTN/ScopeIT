@@ -4,19 +4,17 @@
     angular.module('scopeit.accounts.services')
         .factory('Auth', Auth);
 
-    Auth.$inject = ['$http', '$cookies', '$rootScope', 'apiUrl'];
+    Auth.$inject = ['$http', '$cookies', 'apiUrl'];
 
-    function Auth($http, $cookies, $rootScope, apiUrl) {
+    function Auth($http, $cookies, apiUrl) {
         var use_session = true,
-            auth_url = apiUrl + 'rest-auth/',
-            username = null;
+            auth_url = apiUrl + 'rest-auth/';
 
         var Auth = {
             http_request: http_request,
             register: register,
             login: login,
-            logout: logout,
-            get_username: get_username
+            logout: logout
         };
         return Auth;
 
@@ -63,7 +61,7 @@
                     $http.defaults.headers.common.Authorization = 'Token ' + data.key;
                     $cookies.token = data.key;
                 }
-                username = data.config.username;
+                $cookies.put('username', data.config.data.username);
                 return data;
             });
         }
@@ -75,13 +73,9 @@
             }).then(function(data){
                 delete $http.defaults.headers.common.Authorization;
                 delete $cookies.token;
-                username = null;
+                $cookies.remove('username');
                 return data;
             });
-        }
-
-        function get_username() {
-            return username;
         }
     }
 })();

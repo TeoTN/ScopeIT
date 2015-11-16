@@ -4,7 +4,8 @@
     angular.module('scopeit.accounts.controllers')
         .controller('LoginFormController', LoginFormController)
         .controller('EntityController', EntityController)
-        .controller('EntityListController', EntityListController);
+        .controller('EntityListController', EntityListController)
+        .controller('EntityFormController', EntityFormController);
 
     LoginFormController.$inject = ['$scope', '$window', 'Auth'];
 
@@ -27,26 +28,39 @@
         };
     }
 
-    EntityController.$inject = ['$scope', 'Auth', 'Entity'];
+    EntityController.$inject = ['$scope', '$cookies', 'Profile', 'Entity'];
 
-    function EntityController($scope, $auth, $entity) {
+    function EntityController($scope, $cookies, $profile, $entity) {
         var vm = this;
-        var username = $auth.get_username();
+        var username = $cookies.get('username');
         vm.remove = function(entity) {
             $entity.remove(username, entity);
             entity.deleted = true;
         };
     }
 
-    EntityListController.$inject = ['$scope', 'Auth', 'Entity'];
+    EntityListController.$inject = ['$scope', '$cookies', 'Profile', 'Entity'];
 
-    function EntityListController($scope, $auth, $entity) {
-        var username = $auth.get_username();
+    function EntityListController($scope, $cookies, $profile, $entity) {
+        var username = $cookies.get('username');
+
+        $profile.get_current().then(function(profile) {
+            $scope.is_employer = profile.is_employer;
+        }, function(err) {
+            console.error(err);
+        });
         $scope.entity_list = [];
         $entity
             .list(username)
             .then(function(response) {
                 $scope.entity_list = response.data;
             });
+
+        $scope.can_add_entity = function() {
+            return $scope.is_employer || $scope.entityList.length == 0;
+        }
     }
+
+    EntityFormController.$inject = ['$scope'];
+    function EntityFormController($scope) {}
 })();

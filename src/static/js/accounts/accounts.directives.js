@@ -4,7 +4,8 @@
     angular.module('scopeit.accounts.directives')
         .directive('loginForm', loginForm)
         .directive('entity', entity)
-        .directive('entityList', entityList);
+        .directive('entityList', entityList)
+        .directive('entityForm', entityForm);
 
         function loginForm() {
             return {
@@ -30,6 +31,15 @@
                 controller: 'EntityListController',
                 controllerAs: 'vm',
                 templateUrl: '/static/fragments/directives/entityList.html'
+            };
+        }
+
+        function entityForm() {
+            return {
+                restrict: 'E',
+                controller: 'EntityFormController',
+                controllerAs: 'vm',
+                templateUrl: '/static/fragments/directives/entityForm.html'
             };
         }
 })();

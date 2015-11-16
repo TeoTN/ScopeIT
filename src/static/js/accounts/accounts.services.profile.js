@@ -5,13 +5,16 @@
         .module('scopeit.accounts.services')
         .factory('Profile', Profile);
 
-    Profile.$inject = ['$http', 'apiUrl'];
+    Profile.$inject = ['$http', '$q', '$cookies', 'apiUrl'];
 
-    function Profile($http, apiUrl) {
+    function Profile($http, $q, $cookies, apiUrl) {
+        var current_profile = null;
+
         var Profile = {
             create: create,
             retrieve: retrieve,
             update: update,
+            get_current: get_current
         };
         return Profile;
 
@@ -20,8 +23,7 @@
                 url: apiUrl + 'profiles/' + username + '/',
                 method: 'GET',
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
         }
 
         function create(profile) {
@@ -30,8 +32,7 @@
                 method: 'POST',
                 data: profile
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
         }
 
         function update(username, profile) {
@@ -40,8 +41,25 @@
                 method: 'PATCH',
                 data: profile
             };
-            var response = $http(request);
-            return response;
+            return $http(request);
+        }
+
+        function get_current() {
+            var deferred = $q.defer(),
+                username = $cookies.get('username');
+            if (current_profile) {
+                deferred.resolve(current_profile);
+            }
+            else {
+                retrieve(username)
+                    .then(function (response) {
+                        current_profile = response.data;
+                        deferred.resolve(current_profile);
+                    }, function (response) {
+                        deferred.reject(response);
+                    });
+            }
+            return deferred.promise;
         }
     }
 })();
