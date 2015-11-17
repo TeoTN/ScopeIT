@@ -5,8 +5,19 @@
         </h3>
     </div>
     <div class="panel-body">
-        <h5>Location:</h5>
+        <h5><strong>Location:</strong></h5>
         <p class="text-info">{{ entity.city }}, {{ entity.country }}</p>
+
+        <h5><strong>Skills:</strong></h5>
+        <ul class="list-group">
+            <li ng-if="entity.skills.length==0" class="list-group-item col-sm-12">
+                <h4 class="list-group-item-heading">List is empty :(</h4>
+            </li>
+            <li ng-repeat="skill in entity.skills" class="list-group-item col-sm-6">
+                <span class="badge">{{ vm.skill_levels[skill.level] }}</span>
+                {{ skill.name }}
+            </li>
+        </ul>
     </div>
     <div class="panel-footer no-padding">
         <span class="text-muted with-margin">Actions: </span>

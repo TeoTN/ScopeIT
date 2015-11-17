@@ -29,7 +29,10 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="/accounts/profile/">Profile</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="/accounts/profile/">Profile</a></li>
+                    <li><a href="/about/">About us</a></li>
+                {% endif %}
                 {% if request.user.is_superuser %}
                 <li><a href="{% url 'api:api-root' %}">API</a></li>
                 <li><a href="/admin/">Admin page</a></li>
@@ -71,11 +74,14 @@
         <h1>Find your ideal job!</h1>
         <p>
             Are you sick and tired with skimming through endless lists of vacancies on dozens of webpages?<br>
-            Why don't you just <a href="#">fill your profile now</a> and wait until your brand new job finds you!<br>
+            Why don't you just fill your profile now and wait until your brand new job finds you!<br>
             Let the most innovative and brilliant algorithms dive into our immense base of job ads and provide you
             with a perfect match.
         </p>
-        <!-- <button class="btn btn-lg btn-primary">Learn more &raquo;</button> -->
+        <div class="text-center">
+            <a class="btn btn-lg btn-info">&laquo; I'm a recruiter</a>
+            <a class="btn btn-lg btn-warning">I'm a jobseeker &raquo;</a>
+        </div>
     </section>
     <section class="row">
         <div class="col-sm-4">
