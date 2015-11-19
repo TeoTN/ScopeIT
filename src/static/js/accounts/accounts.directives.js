@@ -3,9 +3,11 @@
 
     angular.module('scopeit.accounts.directives')
         .directive('loginForm', loginForm)
+        .directive('signupForm', signupForm)
         .directive('entity', entity)
         .directive('entityList', entityList)
         .directive('entityForm', entityForm);
+
 
         function loginForm() {
             return {
@@ -13,6 +15,15 @@
                 controller: 'LoginFormController',
                 controllerAs: 'vm',
                 templateUrl: '/static/fragments/directives/loginForm.html'
+            };
+        }
+
+        function signupForm() {
+            return {
+                restrict: 'EA',
+                controller: 'SignUpFormController',
+                controllerAs: 'vm',
+                templateUrl: '/static/fragments/directives/signupForm.html'
             };
         }
 

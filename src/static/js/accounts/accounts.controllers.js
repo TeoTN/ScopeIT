@@ -3,6 +3,7 @@
 
     angular.module('scopeit.accounts.controllers')
         .controller('LoginFormController', LoginFormController)
+        .controller('SignupFormController', SignupFormController)
         .controller('EntityController', EntityController)
         .controller('EntityListController', EntityListController)
         .controller('EntityFormController', EntityFormController);
@@ -26,6 +27,62 @@
                     $scope.non_field_errors = response.data.non_field_errors;
                 });
         };
+    }
+
+    SignupFormController.$inject = ['$scope', '$routeParams', 'Auth'];
+
+    function SignupFormController($scope, $routeParams, Auth) {
+        $scope.model = {
+            'username': '',
+            'password1': '',
+            'password2': '',
+            'email': '',
+            'firstname': '',
+            'surname': '',
+            'is_employer': $routeParams.is_employer=='True'?true:false
+        };
+        $scope.complete = false;
+        $scope.errors = {
+            'global': []
+        };
+
+        var errorAlias = {
+            'minlength': 'This value is not long enough.',
+            'maxlength': 'This value is too long.',
+            'email': 'A properly formatted email address is required.',
+            'required': 'This field is required.'
+        };
+
+        $scope.register = function(formData){
+            if(!formData.$invalid) {
+                Auth.register($scope.model)
+                    .then(function(data){
+                        // success case
+                        $scope.complete = true;
+                    },function(data){
+                        // error case
+                        $scope.errors = data;
+                    });
+            }
+            else {
+                for(var field in formData) {
+                    if (field.substr(0, 1) == '$') continue;
+                    for(var error in formData[field].$error){
+                        if(formData[field].$error[error]){
+                            if (!$scope.errors[field]) {
+                                $scope.errors[field] = [];
+                            }
+                            if (errorAlias.hasOwnProperty(error)) {
+                                $scope.errors[field].push(errorAlias[error]);
+                            }
+                            else {
+                                $scope.errors['global'].push(errorAlias[error]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     EntityController.$inject = ['$scope', '$cookies', 'Entity', 'Skills'];

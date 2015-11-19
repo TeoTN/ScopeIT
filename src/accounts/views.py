@@ -5,8 +5,6 @@ from django.views.generic.edit import FormView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 
-from .forms import EntityForm
-
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -24,8 +22,3 @@ class ProfileView(TemplateView):
             return redirect('index')
 
         return super(ProfileView, self).dispatch(request, *args, **kwargs)
-
-
-class EntityFormView(FormView):
-    template_name = 'account/entity_form.html'
-    form_class = EntityForm

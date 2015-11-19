@@ -5,7 +5,6 @@ from django.conf.urls import include, url
 
 from accounts.views import (
     ProfileView,
-    EntityFormView,
 )
 
 urlpatterns = [
@@ -19,8 +18,4 @@ urlpatterns = [
     url(r'^profile/',
         ProfileView.as_view(),
         name='profile'),
-
-    url(r'^entity-form/$',
-        EntityFormView.as_view(),
-        name='entity-form'),
 ]

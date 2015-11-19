@@ -41,11 +41,14 @@
         }
 
         function register(user_data) {
-            return http_request({
+            user_data = angular.copy(user_data);
+            console.log(user_data);
+            var promise = http_request({
                 method: "POST",
                 url: "registration/",
                 data: user_data
             });
+            return promise;
         }
 
         function login(username, password) {
