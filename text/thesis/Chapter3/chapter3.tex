@@ -1,39 +1,62 @@
-\chapter{My Third Chapter}
+\chapter{Technologies used and architectural solutions}
 \ifpdf
     \graphicspath{{Chapter3/Chapter3Figs/PNG/}{Chapter3/Chapter3Figs/PDF/}{Chapter3/Chapter3Figs/}}
 \else
     \graphicspath{{Chapter3/Chapter3Figs/EPS/}{Chapter3/Chapter3Figs/}}
 \fi
 
-\section{First Section of the Third Chapter}
-\markboth{\MakeUppercase{\thechapter. My Third Chapter }}{\thechapter. My Third Chapter}
-And now I begin my third chapter here ...
+\section{Environment}
+\markboth{\MakeUppercase{\thechapter. Technologies and architecture }}{\thechapter. Technologies used}
+It could be stated here that there are many other solutions and the choice was driven by personal experiences and knowledge.
 
-\subsection{first subsection in the First Section}
-... and some more 
+\subsection{Virtual machine served by Vagrant}
+What is vagrant? What is it used for? What are boxes? Which box is used?
 
-\subsection{second subsection in the First Section}
-... and some more ...
+\subsection{Puppet}
+What is puppet?
+What are alternatives?
+Why is it suitable for a quick deployment of a brand new environment?
+What puppet modules are used? \marginnote{PostgreSQL, etc}
 
-\subsubsection{first subsub section in the second subsection}
-... and some more in the first subsub section otherwise it all looks the same
-doesn't it? well we can add some text to it ...
+\subsection{Python 3}
+Small excerpt about Python and its version. 
+What programming paradigm is represented by Python?
+Why it is recommended to use Python 3.x instead of Python 2.x?
 
-\subsection{third subsection in the First Section}
-... and some more ...
+\subsection{Python virtualenv}
+What are virtualenvs?
+Why is it worthwhile to use it?
+How to install all dependencies with one-liner? (pip)
 
-\subsubsection{first subsub section in the third subsection}
-... and some more in the first subsub section otherwise it all looks the same
-doesn't it? well we can add some text to it and some more and some more and
-some more and some more and some more and some more and some more ...
+\section{Frameworks and libraries}
 
-\subsubsection{second subsub section in the third subsection}
-... and some more in the first subsub section otherwise it all looks the same
-doesn't it? well we can add some text to it ...
+\subsection{Django}
+What is Django?
+What are alternatives in Python? \marginnote{Flask, Pyramid}
+What are general alternatives? \marginnote{Java EE, Play! Framework, Ruby on Rails, NodeJS (?)}
 
-\section{Second Section of the Third Chapter}
-\markboth{\MakeUppercase{\thechapter. My Third Chapter }}{\thechapter. My Third Chapter}
-and here I write more ...
+\subsection{Django REST Framework}
+What is REST?
+What does this framework provide?
+What are components that should be created to have REST API?
+What were the problems with deserialization?
+
+\subsection{Django Allauth}
+What is the package used for?
+How does OAuth2 work? /marginnote{OAuth2 description might be removed from final version}
+How Google Plus authentication may be obtained?
+What were obstacles that lead to the decision about not using skills from LinkedIn?
+
+\subsection{Django REST Auth}
+Who has made it? What is it used for? Why is it complimentary to the package above?
+
+\subsection{Unittest}
+What are unit tests?
+Why is it important to write unit tests?
+What is tested within this project?
+
+\subsection{Other dependencies}
+Can be found in requirements.txt
 
 % ------------------------------------------------------------------------
 
