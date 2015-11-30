@@ -73,3 +73,11 @@
 .with-padding {
     margin: 15px !important;
 }
+
+.ng-touched.ng-invalid {
+    border: 2px solid #e74c3c;
+}
+
+.ng-touched.ng-valid {
+    border: 2px solid #18bc9c;
+}

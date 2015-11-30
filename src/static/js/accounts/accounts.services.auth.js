@@ -48,6 +48,9 @@
                 url: "registration/",
                 data: user_data
             });
+            promise.catch(function(error){
+                console.log(error);
+            });
             return promise;
         }
 

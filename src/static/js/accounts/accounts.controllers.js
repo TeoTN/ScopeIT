@@ -37,8 +37,8 @@
             'password1': '',
             'password2': '',
             'email': '',
-            'firstname': '',
-            'surname': '',
+            'first_name': '',
+            'last_name': '',
             'is_employer': $routeParams.is_employer=='True'?true:false
         };
         $scope.complete = false;
@@ -61,7 +61,7 @@
                         $scope.complete = true;
                     },function(data){
                         // error case
-                        $scope.errors = data;
+                        $scope.errors=data;
                     });
             }
             else {
@@ -76,7 +76,7 @@
                                 $scope.errors[field].push(errorAlias[error]);
                             }
                             else {
-                                $scope.errors['global'].push(errorAlias[error]);
+                                $scope.errors.global.push(errorAlias[error]);
                             }
                         }
                     }
