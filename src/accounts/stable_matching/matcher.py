@@ -1,13 +1,12 @@
-from queue import Queue
 from accounts.models import Entity, Skill
-from math import sqrt
 
-CAPACITY = 5
+CAPACITY = 1
 
 
 class Comparator(object):
     def __init__(self):
         self.skills = list(Skill.objects.all())
+        self.distances = {}
 
     def eval(self, role):
         role_skills = list(role.get_skills())
@@ -17,6 +16,11 @@ class Comparator(object):
         return role_skills_vector, len(role_skills)
 
     def get_proximity(self, requirement, offer):
+        req_id = requirement.id
+        off_id = offer.id
+        cached = self.distances.get((req_id, off_id), None)
+        if cached:
+            return cached
         req_vector, coeff = self.eval(requirement)
         off_vector, _ = self.eval(offer)
         proximity = 0.0
@@ -27,8 +31,9 @@ class Comparator(object):
                 proximity += off_vector[skill_name]
             else:
                 proximity += 2*off_vector[skill_name] - req_vector[skill_name]
-
-        return round(proximity/coeff, 2)
+        result = round(proximity/coeff, 2)
+        self.distances[(req_id, off_id)] = result
+        return result
 
     def get_skill_value(self, userskill):
         value = userskill.level**2
@@ -47,12 +52,19 @@ class Comparator(object):
 
 
 class AcceptingRole(object):
+    __last_id = 0
+
     def __init__(self, entity):
         self.__entity = entity
-        self.__matches = None
+        self.match = None
+        self.comparator = Comparator()
+        self.id = AcceptingRole.__last_id
+        AcceptingRole.__last_id += 1
 
-    def prefers(self, comparator, comparable):
-        pass
+    def prefers(self, comparable):
+        current = self.comparator.get_proximity(self, self.match)
+        proposed = self.comparator.get_proximity(self, comparable)
+        return proposed > current
 
     def get_username(self):
         return self.__entity.user_profile.user.username
@@ -62,22 +74,20 @@ class AcceptingRole(object):
 
 
 class ProposingRole(object):
-    def __init__(self, entity, **kwargs):
+    __last_id = 0
+
+    def __init__(self, entity, receivers, **kwargs):
         self.__entity = entity
-        self.__is_employer = entity.user_profile.is_employer
+        self.id = ProposingRole.__last_id
+        ProposingRole.__last_id += 1
         self.capacity = CAPACITY
         self.last_proposal = 0
         self.comparator = Comparator()
+        self.receivers = receivers
         self.preference_list = self.__build_preference_list()
 
     def __build_preference_list(self):
-        counterparts = Entity.objects.filter(user_profile__is_employer=not self.__is_employer)
-        counterparts_roles = []
-        for counterpart in counterparts:
-            role = AcceptingRole(counterpart)
-            proximity = self.comparator.get_proximity(self, role)
-            counterparts_roles.append((role, proximity))
-        pref_list = sorted(counterparts_roles, key=lambda agent: agent[1], reverse=True)
+        pref_list = sorted(self.receivers[:], key=lambda receiver: self.comparator.get_proximity(self, receiver), reverse=True)
         return pref_list
 
     def get_skills(self):
@@ -86,10 +96,46 @@ class ProposingRole(object):
     def get_username(self):
         return self.__entity.user_profile.user.username
 
+    def get_next(self):
+        self.last_proposal += 1
+        return self.preference_list[self.last_proposal - 1]
+
 
 class Matcher(object):
     def __init__(self):
-        self.queue = Queue()
-        self.jobs = Entity.objects.filter(user_profile__is_employer=True)
-        self.applicants = Entity.objects.filter(user_profile__is_employer=False)
+        self.jobs = Entity.objects.filter(user_profile__is_employer=True).exclude(skills=None)
+        self.applicants = Entity.objects.filter(user_profile__is_employer=False).exclude(skills=None)
+        self.receivers = [AcceptingRole(applicant) for applicant in self.applicants]
+        self.proposers = [ProposingRole(job, self.receivers) for job in self.jobs]
+        self.jobs_count = len(self.proposers)
+        self.applicants_count = len(self.receivers)
+        self.not_matched = self.proposers[:]
 
+    def run(self):
+        while len(self.not_matched):
+            proposer = self.not_matched[0]
+            receiver = proposer.get_next()
+
+            if receiver.match is None:
+                receiver.match = proposer
+                print("{} initially accepts {}".format(receiver.get_username(), receiver.match.get_username()))
+                proposer.capacity -= 1
+            elif receiver.prefers(proposer):
+                old_match = receiver.match
+                old_match.capacity += 1
+                self.not_matched.append(old_match)
+                print("{} exchanges {} for {}".format(receiver.get_username(), old_match.get_username(), proposer.get_username()))
+                receiver.match = proposer
+                proposer.capacity -= 1
+            else:
+                print("{} rejects {}".format(receiver.get_username(), proposer.get_username()))
+
+            if proposer.last_proposal >= self.applicants_count or proposer.capacity == 0:
+                self.not_matched.remove(proposer)
+        self.print_matching()
+
+    def print_matching(self):
+        for receiver in self.receivers:
+            receiver_name = receiver.get_username()
+            match_name = "nobody" if not receiver.match else receiver.match.get_username()
+            print("{} has matched {}".format(receiver_name, match_name))
