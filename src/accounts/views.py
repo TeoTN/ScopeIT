@@ -1,6 +1,5 @@
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
-from django.views.generic.edit import FormView
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView

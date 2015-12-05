@@ -8,9 +8,9 @@
         .controller('EntityListController', EntityListController)
         .controller('EntityFormController', EntityFormController);
 
-    LoginFormController.$inject = ['$scope', '$window', 'Auth'];
+    LoginFormController.$inject = ['$scope', '$http', '$window', 'Auth'];
 
-    function LoginFormController($scope, $window, Auth) {
+    function LoginFormController($scope, $http, $window, Auth) {
         var vm = this;
         $scope.user = {};
 
@@ -27,6 +27,11 @@
                     $scope.non_field_errors = response.data.non_field_errors;
                 });
         };
+
+        vm.with_google = function() {
+            var response = $http.post('/api/v1/rest-auth/google/', {'access_token': $cookies.token});
+            response.then(function(r) {console.log(r);}, function(r) {console.log(r);});
+        }
     }
 
     SignupFormController.$inject = ['$scope', '$routeParams', '$window', 'Auth'];

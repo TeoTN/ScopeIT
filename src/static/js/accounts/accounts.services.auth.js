@@ -14,7 +14,7 @@
             http_request: http_request,
             register: register,
             login: login,
-            logout: logout
+            logout: logout,
         };
         return Auth;
 

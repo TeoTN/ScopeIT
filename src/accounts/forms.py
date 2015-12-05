@@ -10,11 +10,13 @@ class SignupForm(UserCreationForm):
     last_name = forms.CharField(max_length=30,
                                 label='Surname',
                                 widget=forms.TextInput(attrs={'placeholder': 'Surname'}))
+    email = forms.EmailField(label="Email address", required=True, help_text="Required.")
 
     def save(self, request):
         user = super(SignupForm, self).save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
         user.save()
 
         is_employer = request.POST.get('is_employer', False)
