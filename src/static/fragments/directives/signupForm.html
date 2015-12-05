@@ -36,14 +36,11 @@
             <div class="form-group">
                 <label for="id_email">Email</label>
                 <input name="email" id="id_email" class="form-control" type="email" ng-model="model.email"
-                       placeholder="Email" required />
+                       placeholder="Email" required/>
             </div>
             <div class="alert alert-danger" ng-repeat="error in errors.email">{{error}}</div>
             <button ng-hide="authenticated" type="submit" class="btn btn-primary">Register</button>
         </form>
         <p ng-if="authenticated">You are already logged in!  You don't need to register.</p>
-    </div>
-    <div ng-if="complete == true">
-        <div class="alert alert-success">Great! You've just registered. You should receive an email shortly with instructions on how to activate your account.</div>
     </div>
 </div>

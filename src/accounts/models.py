@@ -63,8 +63,6 @@ class Certificate(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    matches = models.ManyToManyField('self', symmetrical=False, related_name='rel_matched_by')
-    matched_by = models.ManyToManyField('self', symmetrical=False, related_name='rel_matches')
     is_employer = models.BooleanField()
 
     def get_job_profiles(self):
@@ -88,6 +86,7 @@ class Entity(models.Model):
     languages = models.ManyToManyField(Language)
     education_tiers = models.ManyToManyField(EducationTier)
     certificates = models.ManyToManyField(Certificate)
+    match = models.ForeignKey("self", null=True)
 
     def __str__(self):
         return "<Entity: user={}>".format(str(self.user_profile.user.username))

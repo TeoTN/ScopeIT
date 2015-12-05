@@ -72,6 +72,11 @@ class AcceptingRole(object):
     def get_skills(self):
         return self.__entity.userskill_set.all()
 
+    def save_match(self):
+        if self.match:
+            self.__entity.match = self.match.get_entity()
+            self.__entity.save()
+
 
 class ProposingRole(object):
     __last_id = 0
@@ -100,6 +105,9 @@ class ProposingRole(object):
         self.last_proposal += 1
         return self.preference_list[self.last_proposal - 1]
 
+    def get_entity(self):
+        return self.__entity
+
 
 class Matcher(object):
     def __init__(self):
@@ -118,24 +126,24 @@ class Matcher(object):
 
             if receiver.match is None:
                 receiver.match = proposer
-                print("{} initially accepts {}".format(receiver.get_username(), receiver.match.get_username()))
                 proposer.capacity -= 1
             elif receiver.prefers(proposer):
                 old_match = receiver.match
                 old_match.capacity += 1
                 self.not_matched.append(old_match)
-                print("{} exchanges {} for {}".format(receiver.get_username(), old_match.get_username(), proposer.get_username()))
                 receiver.match = proposer
                 proposer.capacity -= 1
-            else:
-                print("{} rejects {}".format(receiver.get_username(), proposer.get_username()))
 
             if proposer.last_proposal >= self.applicants_count or proposer.capacity == 0:
                 self.not_matched.remove(proposer)
-        self.print_matching()
+        self.save_matching()
 
     def print_matching(self):
         for receiver in self.receivers:
             receiver_name = receiver.get_username()
             match_name = "nobody" if not receiver.match else receiver.match.get_username()
             print("{} has matched {}".format(receiver_name, match_name))
+
+    def save_matching(self):
+        for receiver in self.receivers:
+            receiver.save_match()

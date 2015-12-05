@@ -42,13 +42,19 @@
 
         function register(user_data) {
             user_data = angular.copy(user_data);
-            console.log(user_data);
             var promise = http_request({
                 method: "POST",
                 url: "registration/",
                 data: user_data
             });
-            promise.catch(function(error){
+            promise.then(function(data) {
+                if (!use_session) {
+                    $http.defaults.headers.common.Authorization = 'Token ' + data.key;
+                    $cookies.token = data.key;
+                }
+                $cookies.put('username', data.config.data.username);
+                return data;
+            }, function(error){
                 console.log(error);
             });
             return promise;

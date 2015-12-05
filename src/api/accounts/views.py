@@ -8,7 +8,8 @@ from .serializers import (
     SkillSerializer,
     UserSkillSerializer,
     UserProfileSerializer,
-    EntitySerializer
+    EntitySerializer,
+    MatchesSerializer
 )
 
 from accounts.models import (
@@ -50,9 +51,17 @@ class EntityViewSet(NestedViewSetMixin, ModelViewSet):
     permission_classes = (IsAuthenticated, EntityPermission)
 
     def get_queryset(self):
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            return Entity.objects.all()
-        return Entity.objects.filter(user_profile__user=self.request.user)
+        return Entity.objects.filter(user_profile__user__username=self.kwargs['parent_lookup_profile'])
+
+
+class MatchesViewSet(NestedViewSetMixin, ModelViewSet):
+    serializer_class = MatchesSerializer
+
+    def get_queryset(self):
+        entity_id = self.kwargs['parent_lookup_entity']
+        mine = Entity.objects.filter(pk=entity_id)
+        theirs = Entity.objects.filter(match__pk=entity_id)
+        return mine | theirs
 
 
 class UserSkillsView(ListModelMixin,

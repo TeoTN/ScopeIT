@@ -4,7 +4,12 @@ from __future__ import absolute_import, unicode_literals
 from django.conf.urls import include, url
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 
-from api.accounts.views import UserProfileViewSet, EntityViewSet, SkillsViewSet
+from api.accounts.views import (
+    UserProfileViewSet,
+    EntityViewSet,
+    SkillsViewSet,
+    MatchesViewSet
+)
 from accounts.views import GoogleLogin
 
 router = ExtendedDefaultRouter()
@@ -13,10 +18,15 @@ profile_routes = router.register('profiles',
                                  UserProfileViewSet,
                                  base_name='user-profile')
 
-profile_routes.register('entity',
+entity = profile_routes.register('entity',
                         EntityViewSet,
                         base_name='entity',
                         parents_query_lookups=['profile'])
+
+entity.register('matches',
+                MatchesViewSet,
+                base_name='matches',
+                parents_query_lookups=['profile', 'entity'])
 
 router.register('skills',
                 SkillsViewSet,

@@ -29,9 +29,9 @@
         };
     }
 
-    SignupFormController.$inject = ['$scope', '$routeParams', 'Auth'];
+    SignupFormController.$inject = ['$scope', '$routeParams', '$window', 'Auth'];
 
-    function SignupFormController($scope, $routeParams, Auth) {
+    function SignupFormController($scope, $routeParams, $window, Auth) {
         $scope.model = {
             'username': '',
             'password1': '',
@@ -59,6 +59,7 @@
                     .then(function(data){
                         // success case
                         $scope.complete = true;
+                        $window.location.href = '/accounts/profile/'
                     },function(data){
                         // error case
                         $scope.errors=data;

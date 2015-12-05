@@ -48,14 +48,19 @@ class EntitySerializer(serializers.ModelSerializer):
     def get_links(self, obj):
         request = self.context['request']
         view = self.context['view']
-        entity_relative_url = reverse('api:entity-detail',
-                                      kwargs={
-                                          'parent_lookup_profile': view.kwargs['parent_lookup_profile'],
-                                          'pk': obj.pk
-                                      })
-        entity_absolute_url = request.build_absolute_uri(entity_relative_url)
+        entity = reverse('api:entity-detail',
+                         kwargs={
+                             'parent_lookup_profile': view.kwargs['parent_lookup_profile'],
+                             'pk': obj.pk
+                         })
+        matches = reverse('api:matches-list',
+                          kwargs={
+                              'parent_lookup_profile': view.kwargs['parent_lookup_profile'],
+                              'parent_lookup_entity': obj.pk
+                          })
         return {
-            'self': entity_absolute_url
+            'self': request.build_absolute_uri(entity),
+            'matches': request.build_absolute_uri(matches)
         }
 
     def create(self, validated_data):
@@ -101,17 +106,58 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_links(self, obj):
         request = self.context['request']
-        entity_relative_url = reverse('api:entity-list',
-                                      kwargs={
-                                          'parent_lookup_profile': obj.user.username
-                                      })
-        entity_absolute_url = request.build_absolute_uri(entity_relative_url)
-        self_relative_url = reverse('api:user-profile-detail',
-                                    kwargs={
-                                        'user__username': obj.user.username
-                                    })
-        self_absolute_url = request.build_absolute_uri(self_relative_url)
+        entity = reverse('api:entity-list',
+                         kwargs={
+                             'parent_lookup_profile': obj.user.username
+                         })
+        self_url = reverse('api:user-profile-detail',
+                           kwargs={
+                               'user__username': obj.user.username
+                           })
         return {
-            'entities': entity_absolute_url,
-            'self': self_absolute_url,
+            'self': request.build_absolute_uri(self_url),
+            'entities': request.build_absolute_uri(entity),
         }
+
+
+class EntityMinimalSerializer(serializers.ModelSerializer):
+    links = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Entity
+        fields = ('links', 'username')
+
+    def get_links(self, obj):
+        request = self.context['request']
+        profile = reverse('api:user-profile-detail',
+                          kwargs={
+                              'user__username': obj.user_profile.user.username
+                          })
+        return {
+            'profile': request.build_absolute_uri(profile),
+        }
+
+    def get_username(self, obj):
+        return obj.user_profile.user.username
+
+
+class MatchesSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Entity
+        fields = ('username', 'type')
+
+    def get_type(self, obj):
+        current_user = self.context['view'].kwargs.get('parent_lookup_profile', "")
+        return 'mine' if obj.user_profile.user.username == current_user else 'theirs'
+
+    def get_username(self, obj):
+        current_user = self.context['view'].kwargs.get('parent_lookup_profile', "")
+        obj_user = obj.user_profile.user.username
+        if obj_user == current_user:
+            return None if not obj.match else obj.match.user_profile.user.username
+        else:
+            return obj.user_profile.user.username
