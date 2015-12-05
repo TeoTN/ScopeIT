@@ -57,7 +57,7 @@
             var entity_link_splitted = entity.links.self.split('/');
             var pk = entity_link_splitted[entity_link_splitted.length-2];
             var request = {
-                url: apiUrl + 'profiles/' + username + '/entity/' + pk,
+                url: apiUrl + 'profiles/' + username + '/entity/' + pk + '/',
                 method: 'DELETE',
                 data: entity
             };

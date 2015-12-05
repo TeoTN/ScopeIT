@@ -91,9 +91,9 @@
         }
     }
 
-    EntityController.$inject = ['$scope', '$cookies', 'Entity', 'Skills'];
+    EntityController.$inject = ['$cookies', 'Entity', 'Skills'];
 
-    function EntityController($scope, $cookies,  $entity, $skills) {
+    function EntityController($cookies,  $entity, $skills) {
         var vm = this;
         var username = $cookies.get('username');
         vm.remove = function(entity) {
@@ -121,7 +121,7 @@
             });
 
         $scope.can_add_entity = function() {
-            return $scope.is_employer || $scope.entity_list.length == 0;
+            return $scope.is_employer || $scope.entity_list.filter(function(e) {return !e.deleted;}).length == 0;
         }
     }
 
