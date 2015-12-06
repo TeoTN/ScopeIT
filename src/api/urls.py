@@ -19,9 +19,9 @@ profile_routes = router.register('profiles',
                                  base_name='user-profile')
 
 entity = profile_routes.register('entity',
-                        EntityViewSet,
-                        base_name='entity',
-                        parents_query_lookups=['profile'])
+                                 EntityViewSet,
+                                 base_name='entity',
+                                 parents_query_lookups=['profile'])
 
 entity.register('matches',
                 MatchesViewSet,

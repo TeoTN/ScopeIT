@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from accounts.models import UserProfile
 
+
 class IsObjectOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.username == obj.user.username

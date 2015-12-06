@@ -92,7 +92,9 @@ class ProposingRole(object):
         self.preference_list = self.__build_preference_list()
 
     def __build_preference_list(self):
-        pref_list = sorted(self.receivers[:], key=lambda receiver: self.comparator.get_proximity(self, receiver), reverse=True)
+        pref_list = sorted(self.receivers[:],
+                           key=lambda receiver: self.comparator.get_proximity(self, receiver),
+                           reverse=True)
         return pref_list
 
     def get_skills(self):

@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 class SignupForm(UserCreationForm):
     first_name = forms.CharField(max_length=30,
                                  label='First name',
-                                 widget=forms.TextInput(attrs={'placeholder': 'First name', 'autofocus':'autofocus'}))
+                                 widget=forms.TextInput(attrs={'placeholder': 'First name', 'autofocus': 'autofocus'}))
     last_name = forms.CharField(max_length=30,
                                 label='Surname',
                                 widget=forms.TextInput(attrs={'placeholder': 'Surname'}))
