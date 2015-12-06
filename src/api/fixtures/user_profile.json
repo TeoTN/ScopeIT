@@ -4,9 +4,7 @@
     "pk": 1,
     "fields": {
         "is_employer": true,
-        "matches": [],
-        "user": 1,
-        "matched_by": []
+        "user": 1
     }
 },
 {
@@ -14,9 +12,15 @@
     "pk": 2,
     "fields": {
         "is_employer": false,
-        "matches": [],
-        "user": 2,
-        "matched_by": []
+        "user": 2
+    }
+},
+{
+    "model": "accounts.userprofile",
+    "pk": 3,
+    "fields": {
+        "is_employer": false,
+        "user": 4
     }
 }
 ]

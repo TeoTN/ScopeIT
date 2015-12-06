@@ -52,5 +52,24 @@
     },
     "model": "auth.user",
     "pk": 3
+},
+{
+    "fields": {
+        "is_superuser": false,
+        "last_name": "Wright",
+        "username": "celine",
+        "last_login": "2015-11-01T00:00:00.000Z",
+        "date_joined": "2015-11-01T00:00:00.000Z",
+        "is_active": true,
+        "groups": [],
+        "user_permissions": [],
+        "first_name": "Celine",
+        "password": "pbkdf2_sha256$20000$EV0mVsQxX3FN$XSVAeEju2Wmi8MLbXhJDeoNo6Al0j7e6CSYFTdjJG8g=",
+        "email": "celine@testers.com",
+        "is_staff": false
+    },
+    "model": "auth.user",
+    "pk": 4
 }
 ]
+

@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-
+from accounts.models import UserProfile
 
 class IsObjectOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -50,7 +50,11 @@ class UserProfilePermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         is_admin = request.user.is_staff or request.user.is_superuser
         is_owner = IsObjectOwner().has_object_permission(request, view, obj)
-        return is_admin or is_owner
+        try:
+            is_matched = obj.is_matched(request.user)
+        except UserProfile.DoesNotExist:
+            is_matched = False
+        return is_admin or is_owner or is_matched
 
 
 class EntityPermission(BasePermission):
@@ -68,3 +72,8 @@ class EntityPermission(BasePermission):
             user_permit = IsLookupUser().has_permission(request, view)
             return user_permit or is_admin
         return True
+
+    def has_object_permission(self, request, view, obj):
+        is_admin = request.user.is_staff or request.user.is_superuser
+        is_owner = obj.user_profile.user.username == request.user.username
+        return is_owner or is_admin

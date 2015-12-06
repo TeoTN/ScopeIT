@@ -68,6 +68,18 @@ class UserProfile(models.Model):
     def get_job_profiles(self):
         return self.profile_set
 
+    def is_matched(self, user):
+        my_entities = list(self.profile_set.all())
+        other_entities = list(user.userprofile.profile_set.all())
+
+        my_matches = set(entity.match for entity in my_entities)
+        other_matches = set(entity.match for entity in other_entities)
+
+        intersection1 = [entity for entity in my_entities if entity in other_matches]
+        intersection2 = [entity for entity in other_entities if entity in my_matches]
+
+        return len(intersection1) + len(intersection2) > 0
+
     def __str__(self):
         return "<UserProfile: {}>".format(self.user.username)
 

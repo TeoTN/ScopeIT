@@ -458,8 +458,8 @@ class TestEntityViewSetAsUser(TestCase):
         view = EntityViewSet.as_view({'get': 'retrieve'})
         response = view(request, parent_lookup_profile='alice', pk=entity.pk)
 
-        failure_msg = "User should be able to retrieve others entity."
-        self.assertEqual(response.status_code, 404, format_failure_message(failure_msg, response.data))
+        failure_msg = "User should not be able to retrieve others entity."
+        self.assertEqual(response.status_code, 403, format_failure_message(failure_msg, response.data))
 
     def test_should_not_update_entity(self):
         """
@@ -473,8 +473,8 @@ class TestEntityViewSetAsUser(TestCase):
         view = EntityViewSet.as_view({'put': 'update'})
         response = view(request, parent_lookup_profile='alice', pk=entity.pk)
 
-        failure_msg = "User should be able to update its entity."
-        self.assertEqual(response.status_code, 404, format_failure_message(failure_msg, response.data))
+        failure_msg = "User should not be able to update its entity."
+        self.assertEqual(response.status_code, 403, format_failure_message(failure_msg, response.data))
         entity.delete()
 
     def test_should_not_create_entity(self):
@@ -490,3 +490,60 @@ class TestEntityViewSetAsUser(TestCase):
 
         failure_msg = "User should not be able to add someone else an entity."
         self.assertEqual(response.status_code, 403, format_failure_message(failure_msg, response.data))
+
+
+class TestEntityViewSetWithMatches(TestCase):
+    fixtures = ['users', 'user_profile']
+
+    def setUp(self):
+        self.user1 = User.objects.get(username='alice')
+        self.user2 = User.objects.get(username='celine')
+        self.user1_profile = UserProfile.objects.get(user=self.user1)
+        self.user2_profile = UserProfile.objects.get(user=self.user2)
+
+    def test_should_retrieve_matched_profile(self):
+        """
+            This test will attempt to make request as user bob to the profile of user alice when they were matched.
+            It is expected that HTTP status code 200 (OK) will be returned.
+        """
+
+        entity1, _ = Entity.objects.get_or_create(user_profile=self.user1_profile)
+        entity2, _ = Entity.objects.get_or_create(user_profile=self.user2_profile)
+        entity2.match = entity1
+        entity2.save()
+
+        url = reverse("api:user-profile-detail", kwargs={'user__username': self.user1.username})
+        request = factory.get(url)
+        force_authenticate(request, user=self.user2)
+
+        view = UserProfileViewSet.as_view({'get': 'retrieve'})
+        response = view(request, user__username=self.user1.username)
+
+        failure_msg = 'User should be able to view profile of its matching.'
+        self.assertEqual(response.status_code, 200, failure_msg)
+
+        entity1.delete()
+        entity2.delete()
+
+    def test_should_retrieve_matched_profile_in_reverse(self):
+        """
+            This test will attempt to make request as user bob to the profile of user alice when they were matched.
+            It is expected that HTTP status code 200 (OK) will be returned.
+        """
+        entity1, _ = Entity.objects.get_or_create(user_profile=self.user1_profile)
+        entity2, _ = Entity.objects.get_or_create(user_profile=self.user2_profile)
+        entity1.match = entity2
+        entity1.save()
+
+        url = reverse("api:user-profile-detail", kwargs={'user__username': self.user1.username})
+        request = factory.get(url)
+        force_authenticate(request, user=self.user2)
+
+        view = UserProfileViewSet.as_view({'get': 'retrieve'})
+        response = view(request, user__username=self.user1.username)
+
+        failure_msg = 'User should be able to see who is matching him/her.'
+        self.assertEqual(response.status_code, 200, failure_msg)
+
+        entity1.delete()
+        entity2.delete()

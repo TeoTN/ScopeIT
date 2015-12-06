@@ -1,1 +1,1 @@
-__author__ = 'piotr'
+from .tests import *  # noqa
