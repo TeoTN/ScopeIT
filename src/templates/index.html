@@ -31,7 +31,7 @@
             <ul class="nav navbar-nav">
                 {% if user.is_authenticated %}
                     <li><a href="/accounts/profile/">Profile</a></li>
-                    <li><a href="/accounts/profile/matches/">Matches found</a></li>
+                    <li><a href="/accounts/matches/">Matches found</a></li>
                     <li><a href="/about/">About us</a></li>
                 {% endif %}
                 {% if request.user.is_superuser %}

@@ -28,7 +28,7 @@
 
         function retrieve(pk) {
             var request = {
-                url: apiUrl + base_url + pk,
+                url: apiUrl + base_url + pk + '/',
                 method: 'GET',
             };
             return $http(request);
@@ -53,7 +53,7 @@
 
         function update(skill) {
             var request = {
-                url: apiUrl + base_url + skill.pk,
+                url: apiUrl + base_url + skill.pk + '/',
                 method: 'PATCH',
                 data: skill
             };
@@ -62,7 +62,7 @@
 
         function remove(skill) {
             var request = {
-                url: apiUrl + base_url + skill.pk,
+                url: apiUrl + base_url + skill.pk + '/',
                 method: 'DELETE',
             };
             return $http(request);

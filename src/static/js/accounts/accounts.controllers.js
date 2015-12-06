@@ -6,7 +6,8 @@
         .controller('SignupFormController', SignupFormController)
         .controller('EntityController', EntityController)
         .controller('EntityListController', EntityListController)
-        .controller('EntityFormController', EntityFormController);
+        .controller('EntityFormController', EntityFormController)
+        .controller('MatchListController', MatchListController);
 
     LoginFormController.$inject = ['$scope', '$http', '$window', 'Auth'];
 
@@ -171,5 +172,34 @@
         $skills.list().then(function(response){
             $scope.skills = response;
         });
+    }
+
+    MatchListController.$inject = ['$scope', '$cookies', 'Entity', 'Match'];
+
+    function MatchListController($scope, $cookies, $entity, $match) {
+        var username = $cookies.get('username');
+        $scope.entity_matchings = {};
+        $scope.error = null;
+        $entity
+            .list(username)
+            .then(function(response) {
+                if (response.data.length == 0) {
+                    $scope.error = "Only after filling your profile will you start receiving job offers.";
+                }
+                for (var index in response.data) {
+                    var entity = response.data[index];
+                    var entity_pk = entity.links.matches.split("/");
+                    entity_pk = entity_pk[entity_pk.length-3];
+                    $match
+                        .list(username, entity_pk)
+                        .then(function(response) {
+                            var matchings = response.data.filter(function(e) {return e.user != null;});
+                            if (matchings.length == 0) {
+                                $scope.error = "No matchings were found yet. Please check this page in a week.";
+                            }
+                            $scope.entity_matchings[entity.title] = response.data;
+                        });
+                }
+            });
     }
 })();

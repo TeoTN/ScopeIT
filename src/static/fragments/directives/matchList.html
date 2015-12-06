@@ -1,0 +1,21 @@
+<p class="alert alert-danger col-sm-offset-1 col-sm-10" ng-show="error">{{error}}</p>
+<div ng-repeat="(entity, matches) in entity_matchings" class=" col-sm-offset-1 col-sm-10">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            {{entity}}
+        </div>
+        <div class="panel-body">
+            <p class="text-info">Matched by me:</p>
+            <p ng-repeat="match in (matches | my_matching)">
+                {{match.user.first_name}} {{match.user.last_name}} ({{match.user.username}})
+            </p>
+            <p class="text-muted" ng-hide="(matches|my_matching).length > 0">(List is empty)</p>
+            <hr>
+            <p class="text-info">My profile was matched by:</p>
+            <p ng-repeat="match in (matches | theirs_matching)">
+                {{match.user.first_name}} {{match.user.last_name}} ({{match.user.username}})
+            </p>
+            <p class="text-muted" ng-hide="(matches|theirs_matching).length > 0">(List is empty)</p>
+        </div>
+    </div>
+</div>

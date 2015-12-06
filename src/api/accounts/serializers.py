@@ -120,44 +120,29 @@ class UserProfileSerializer(serializers.ModelSerializer):
         }
 
 
-class EntityMinimalSerializer(serializers.ModelSerializer):
-    links = serializers.SerializerMethodField()
-    username = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Entity
-        fields = ('links', 'username')
-
-    def get_links(self, obj):
-        request = self.context['request']
-        profile = reverse('api:user-profile-detail',
-                          kwargs={
-                              'user__username': obj.user_profile.user.username
-                          })
-        return {
-            'profile': request.build_absolute_uri(profile),
-        }
-
-    def get_username(self, obj):
-        return obj.user_profile.user.username
-
-
 class MatchesSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
     type = serializers.SerializerMethodField()
 
     class Meta:
         model = Entity
-        fields = ('username', 'type')
+        fields = ('user',  'type')
 
     def get_type(self, obj):
         current_user = self.context['view'].kwargs.get('parent_lookup_profile', "")
         return 'mine' if obj.user_profile.user.username == current_user else 'theirs'
 
-    def get_username(self, obj):
+    def get_user(self, obj):
         current_user = self.context['view'].kwargs.get('parent_lookup_profile', "")
         obj_user = obj.user_profile.user.username
         if obj_user == current_user:
-            return None if not obj.match else obj.match.user_profile.user.username
+            user_data = None if not obj.match else obj.match.user_profile.user
         else:
-            return obj.user_profile.user.username
+            user_data = obj.user_profile.user
+
+        return {
+            'username': user_data.username,
+            'first_name': user_data.first_name,
+            'last_name': user_data.last_name
+        } if user_data else None

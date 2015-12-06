@@ -6,7 +6,8 @@
         .directive('signupForm', signupForm)
         .directive('entity', entity)
         .directive('entityList', entityList)
-        .directive('entityForm', entityForm);
+        .directive('entityForm', entityForm)
+        .directive('matchList', matchList);
 
 
         function loginForm() {
@@ -51,6 +52,15 @@
                 controller: 'EntityFormController',
                 controllerAs: 'vm',
                 templateUrl: '/static/fragments/directives/entityForm.html'
+            };
+        }
+
+        function matchList() {
+            return {
+                restrict: 'E',
+                controller: 'MatchListController',
+                controllerAs: 'vm',
+                templateUrl: '/static/fragments/directives/matchList.html'
             };
         }
 })();
