@@ -10,57 +10,57 @@
         .directive('matchList', matchList);
 
 
-        function loginForm() {
-            return {
-                restrict: 'E',
-                controller: 'LoginFormController',
-                controllerAs: 'vm',
-                templateUrl: '/static/fragments/directives/loginForm.html'
-            };
-        }
+    function loginForm() {
+        return {
+            restrict: 'E',
+            controller: 'LoginFormController',
+            controllerAs: 'vm',
+            templateUrl: '/static/fragments/directives/loginForm.html'
+        };
+    }
 
-        function signupForm() {
-            return {
-                restrict: 'EA',
-                controller: 'SignUpFormController',
-                controllerAs: 'vm',
-                templateUrl: '/static/fragments/directives/signupForm.html'
-            };
-        }
+    function signupForm() {
+        return {
+            restrict: 'EA',
+            controller: 'SignUpFormController',
+            controllerAs: 'vm',
+            templateUrl: '/static/fragments/directives/signupForm.html'
+        };
+    }
 
-        function entity() {
-            return {
-                restrict: 'E',
-                controller: 'EntityController',
-                controllerAs: 'vm',
-                templateUrl: '/static/fragments/directives/entity.html'
-            };
-        }
+    function entity() {
+        return {
+            restrict: 'E',
+            controller: 'EntityController',
+            controllerAs: 'vm',
+            templateUrl: '/static/fragments/directives/entity.html'
+        };
+    }
 
-        function entityList() {
-            return {
-                restrict: 'E',
-                controller: 'EntityListController',
-                controllerAs: 'vm',
-                templateUrl: '/static/fragments/directives/entityList.html'
-            };
-        }
+    function entityList() {
+        return {
+            restrict: 'E',
+            controller: 'EntityListController',
+            controllerAs: 'vm',
+            templateUrl: '/static/fragments/directives/entityList.html'
+        };
+    }
 
-        function entityForm() {
-            return {
-                restrict: 'E',
-                controller: 'EntityFormController',
-                controllerAs: 'vm',
-                templateUrl: '/static/fragments/directives/entityForm.html'
-            };
-        }
+    function entityForm() {
+        return {
+            restrict: 'E',
+            controller: 'EntityFormController',
+            controllerAs: 'vm',
+            templateUrl: '/static/fragments/directives/entityForm.html'
+        };
+    }
 
-        function matchList() {
-            return {
-                restrict: 'E',
-                controller: 'MatchListController',
-                controllerAs: 'vm',
-                templateUrl: '/static/fragments/directives/matchList.html'
-            };
-        }
+    function matchList() {
+        return {
+            restrict: 'E',
+            controller: 'MatchListController',
+            controllerAs: 'vm',
+            templateUrl: '/static/fragments/directives/matchList.html'
+        };
+    }
 })();

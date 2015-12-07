@@ -4,16 +4,19 @@
     angular.module('scopeit.accounts.controllers')
         .controller('LoginFormController', LoginFormController)
         .controller('SignupFormController', SignupFormController)
+        .controller('ProfileController', ProfileController)
+        .controller('LogoutController', LogoutController)
         .controller('EntityController', EntityController)
         .controller('EntityListController', EntityListController)
         .controller('EntityFormController', EntityFormController)
         .controller('MatchListController', MatchListController);
 
-    LoginFormController.$inject = ['$scope', '$http', '$window', 'Auth'];
+    LoginFormController.$inject = ['$scope', '$http', '$location','Auth'];
 
-    function LoginFormController($scope, $http, $window, Auth) {
+    function LoginFormController($scope, $http, $location, Auth) {
         var vm = this;
         $scope.user = {};
+        $scope.hide = false;
 
         vm.login = function(isValid) {
             if (!isValid) return;
@@ -22,7 +25,7 @@
             Auth
                 .login(username, password)
                 .then(function(response) {
-                    $window.location.reload();
+                    $location.path('/profile/');
                 }, function(response) {
                     console.log(response);
                     $scope.non_field_errors = response.data.non_field_errors;
@@ -92,6 +95,21 @@
         }
     }
 
+    ProfileController.$inject = ['$scope'];
+
+    function ProfileController($scope) {}
+
+    LogoutController.$inject = ['$location', '$timeout', 'Auth'];
+
+    function LogoutController($location, $timeout, Auth) {
+        Auth.logout().then(redirectHomeAfterWhile);
+        function redirectHomeAfterWhile() {
+            $timeout(function() {
+                $location.path('/');
+            }, 3000);
+        }
+    }
+
     EntityController.$inject = ['$cookies', 'Entity', 'Skills'];
 
     function EntityController($cookies,  $entity, $skills) {
@@ -107,20 +125,20 @@
     EntityListController.$inject = ['$scope', '$cookies', 'Profile', 'Entity'];
 
     function EntityListController($scope, $cookies, $profile, $entity) {
-        var username = $cookies.get('username');
 
+        var username = $cookies.get('username');
         $profile.get_current().then(function(profile) {
             $scope.is_employer = profile.is_employer;
         }, function(err) {
             console.error(err);
         });
         $scope.entity_list = [];
+
         $entity
             .list(username)
             .then(function(response) {
                 $scope.entity_list = response.data;
             });
-
         $scope.can_add_entity = function() {
             return $scope.is_employer || $scope.entity_list.filter(function(e) {return !e.deleted;}).length == 0;
         }

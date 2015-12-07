@@ -9,12 +9,12 @@
         ])
         .filter('my_matching', function() {
             return function(input) {
-                return input.filter(function(e) {return e.type == 'mine' && e.user.username != null});
+                return input.filter(function(e) {return e.type == 'mine' && e.user && e.user.username != null});
             };
         })
         .filter('theirs_matching', function() {
                 return function(input) {
-                return input.filter(function(e) {return e.type == 'theirs' && e.user.username != null});
+                return input.filter(function(e) {return e.type == 'theirs' && e.user && e.user.username != null});
             };
         });
 
