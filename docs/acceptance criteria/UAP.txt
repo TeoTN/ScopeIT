@@ -1,9 +1,0 @@
-===============================================================================
-ACC #UAP: ACCEPTANCE CRITERIA - USER ACTION PERMISSION
-===============================================================================
-ACC-UAP-1: When user requests access to profile settings view without being
-logged in HTTP error code 403 will be raised
--------------------------------------------------------------------------------
-ACC-UAP-2: When logged in user requests access to his/her profile settings 
-no error will be thrown and view will be displayed properly.
-===============================================================================

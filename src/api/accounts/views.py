@@ -1,7 +1,9 @@
 from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
+from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from .serializers import (
@@ -19,6 +21,8 @@ from accounts.models import (
     Entity,
 )
 from api.permissions import UserProfilePermission, EntityPermission
+
+import json
 
 
 class UserProfileViewSet(NestedViewSetMixin, ModelViewSet):
@@ -82,3 +86,16 @@ class UserSkillsView(ListModelMixin,
     def get_queryset(self):
         user = self.request.user
         return UserSkill.objects.filter(profile__user=user)
+
+class NetworkView(APIView):
+    def get(self, request, *args, **kwargs):
+        network = []
+        for entity in Entity.objects.filter(match__isnull=False):
+            entry = {
+                'from': entity.user_profile.user.pk,
+                'to': entity.match.user_profile.user.pk
+            }
+            network.append(entry)
+        response = Response(network)
+        response.status = 200
+        return response

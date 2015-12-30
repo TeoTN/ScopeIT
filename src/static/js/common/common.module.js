@@ -33,6 +33,12 @@
                         templateUrl: '/static/fragments/matchesPage.html',
                         requireAuth: true
                     })
+                    .when('/network/', {
+                        templateUrl: '/static/fragments/matchesNetwork.html',
+                        controller: 'MatchesNetworkController',
+                        controllerAs: 'vm',
+                        requireAuth: true
+                    })
                     .when('/signup/:is_employer', {
                         templateUrl: '/static/fragments/directives/signupForm.html',
                         controller: 'SignupFormController',

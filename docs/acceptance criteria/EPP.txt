@@ -1,6 +1,0 @@
-===============================================================================
-ACC #EPP: ACCEPTANCE CRITERIA - EXTERNAL PROFILE PROVIDER
-===============================================================================
-ACC-EPP-1: When user successfully log in with external service - LinkedIn -
-then his/her skills will be imported to local profile and properly classified. 
-===============================================================================

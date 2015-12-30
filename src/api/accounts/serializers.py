@@ -98,11 +98,15 @@ class EntitySerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    user_pk = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'is_employer', 'links')
+        fields = ('user', 'user_pk', 'is_employer', 'links')
+
+    def get_user_pk(self, obj):
+        return obj.user.pk
 
     def get_links(self, obj):
         request = self.context['request']
