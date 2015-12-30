@@ -56,33 +56,3 @@ python::pyvenv { 'scopeit':
 	venv_dir 	=> $venv_path,
 }
 
-/*
-class { 'nodejs':
-	nodejs_dev_package_ensure 	=> 'present',
-	npm_package_ensure			=> 'present',
-	repo_class					=> '::epel',
-}
-
-package { 'bower':
-    ensure => 'present',
-    provider => 'npm',
-}
-
-nodejs::npm { 'react':
-    ensure => 'present',
-    install_options => ['--save'],
-    target          => '/home/vagrant/ScopeIT/src/static/js/build/',
-}
-
-nodejs::npm { 'react-dom':
-    ensure => 'present',
-    install_options => ['--save'],
-    target          => '/home/vagrant/ScopeIT/src/static/js/build/',
-}
-
-nodejs::npm { 'babel':
-    ensure => 'present',
-    install_options => ['--save'],
-    target          => '/home/vagrant/ScopeIT/src/static/js/build/',
-}
-*/
