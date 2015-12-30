@@ -12,7 +12,6 @@ develop-eggs/
 dist/
 downloads/
 env/scopeit/
-env/modules/*
 env/.vagrant/
 eggs/
 .eggs/
