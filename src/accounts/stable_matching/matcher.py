@@ -1,6 +1,6 @@
 from accounts.models import Entity, Skill
 
-CAPACITY = 1
+CAPACITY = 2
 
 
 class Comparator(object):
@@ -124,7 +124,11 @@ class Matcher(object):
     def run(self):
         while len(self.not_matched):
             proposer = self.not_matched[0]
-            receiver = proposer.get_next()
+            try:
+                receiver = proposer.get_next()
+            except IndexError:
+                self.not_matched.remove(proposer)
+                continue
 
             if receiver.match is None:
                 receiver.match = proposer
